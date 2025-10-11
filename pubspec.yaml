@@ -1,0 +1,45 @@
+name: beifa_app_platform
+description: 贝发集团智能产品APP导航平台
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.2
+  http: ^1.1.0
+  cached_network_image: ^3.3.0
+  url_launcher: ^6.2.1
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.20.2
+  shared_preferences: ^2.2.2
+  permission_handler: ^11.0.1
+  path_provider: ^2.1.1
+  dio: ^5.3.2
+  provider: ^6.1.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/
+    - assets/icons/
+  # fonts:
+  #   - family: PingFang
+  #     fonts:
+  #       - asset: assets/fonts/PingFang-Regular.ttf
+  #       - asset: assets/fonts/PingFang-Medium.ttf
+  #         weight: 500
+  #       - asset: assets/fonts/PingFang-Bold.ttf
+  #         weight: 700
+
