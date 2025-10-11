@@ -9,16 +9,22 @@ class HeaderWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // 获取屏幕宽度用于自适应
+    final screenWidth = MediaQuery.of(context).size.width;
+    
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: EdgeInsets.symmetric(
+        horizontal: screenWidth * 0.032, // 24px基于750px屏幕
+        vertical: screenWidth * 0.016,    // 12px基于750px屏幕
+      ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Row(
             children: [
-              const BeifaLogo(
-                width: 120,
-                height: 24,
+              BeifaLogo(
+                width: screenWidth * 0.17866,   // 134px基于750px屏幕
+                height: screenWidth * 0.03733, // 28px基于750px屏幕
               ),
             ],
           ),
@@ -28,16 +34,16 @@ class HeaderWidget extends StatelessWidget {
                 onTap: () => _showLanguageDialog(context, languageService),
                 child: Row(
                   children: [
-                    const TranslateIcon(
-                      width: 20,
-                      height: 20,
+                    TranslateIcon(
+                      width: screenWidth * 0.034666,  // 26px基于750px屏幕
+                      height: screenWidth * 0.034666, // 26px基于750px屏幕
                     ),
-                    const SizedBox(width: 4),
+                    SizedBox(width: screenWidth * 0.010667), // 8px基于750px屏幕
                     Text(
                       languageService.getLanguageName(languageService.currentLocale),
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: Colors.black87,
-                        fontSize: 14,
+                        fontSize: screenWidth * 0.026667, // 20px基于750px屏幕
                       ),
                     ),
                   ],
