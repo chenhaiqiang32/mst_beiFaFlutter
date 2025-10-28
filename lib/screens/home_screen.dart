@@ -17,7 +17,6 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final DataService _dataService = DataService();
   List<Product> _products = [];
-  Product? _featuredProduct;
 
   @override
   void initState() {
@@ -28,8 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void _loadProducts() {
     final products = _dataService.getProducts();
     setState(() {
-      _products = products.where((p) => !p.isFeatured).toList();
-      _featuredProduct = products.firstWhere((p) => p.isFeatured);
+      _products = products.toList(); // 显示所有产品，包括第一条
     });
   }
 
@@ -45,31 +43,38 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Color(0xFFF5F5F7),
       body: SafeArea(
-        child: Column(
+        child: Stack(
           children: [
-            const HeaderWidget(),
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    const FeaturedBanner(),
-                    const SizedBox(height: 16),
-                    ..._products.map((product) => Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      child: ProductCard(
-                        product: product,
-                        onDownload: () => _navigateToDetail(product),
-                        onDetails: () => _navigateToDetail(product),
+            Column(
+              children: [
+                const HeaderWidget(),
+                const FeaturedBanner(),
+                const SizedBox(height: 16),
+                Expanded(
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 40),
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          ..._products.map((product) => Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            child: ProductCard(
+                              product: product,
+                              onDownload: () => _navigateToDetail(product),
+                              onDetails: () => _navigateToDetail(product),
+                            ),
+                          )),
+                          const SizedBox(height: 80), // 为底部固定的footer留出空间
+                        ],
                       ),
-                    )),
-                    const SizedBox(height: 32),
-                    const FooterWidget(),
-                  ],
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
+            const FooterWidget(),
           ],
         ),
       ),

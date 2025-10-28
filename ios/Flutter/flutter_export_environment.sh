@@ -1,7 +1,7 @@
 #!/bin/sh
 # This is a generated file; do not edit or check into version control.
 export "FLUTTER_ROOT=/Users/haiqiangchen/flutter"
-export "FLUTTER_APPLICATION_PATH=/Users/haiqiangchen/Desktop/work/南京魔数团/flutter 项目测试/beifa_app_platform"
+export "FLUTTER_APPLICATION_PATH=/Users/haiqiangchen/Desktop/work/南京魔数团/贝发项目/flutter"
 export "COCOAPODS_PARALLEL_CODE_SIGN=true"
 export "FLUTTER_TARGET=lib/main.dart"
 export "FLUTTER_BUILD_DIR=build"

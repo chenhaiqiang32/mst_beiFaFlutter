@@ -21,7 +21,7 @@ class ProductCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(screenWidth * 0.03),
+        borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
             color: Color(0x000000).withOpacity(0.08),
@@ -48,13 +48,12 @@ class ProductCard extends StatelessWidget {
                         width: screenWidth * 0.0426667,
                         height: screenWidth * 0.0426667,
                         decoration: BoxDecoration(
-                          color: Colors.purple,
                           borderRadius: BorderRadius.circular(screenWidth * 0.008),
                         ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(screenWidth * 0.008),
                           child: Image.asset(
-                            'assets/images/beifa_logo.png',
+                            product.logoUrl,
                             width: screenWidth * 0.0426667,
                             height: screenWidth * 0.0426667,
                             fit: BoxFit.cover,
@@ -63,7 +62,7 @@ class ProductCard extends StatelessWidget {
                       ),
                       SizedBox(width: screenWidth * 0.01),
                       Text(
-                        'NOVXX',
+                        product.name,
                         style: TextStyle(
                           fontSize: screenWidth * 0.03733,
                           fontWeight: FontWeight.bold,
@@ -76,7 +75,7 @@ class ProductCard extends StatelessWidget {
                   SizedBox(height: screenWidth * 0.03),
                   // 产品标题
                   Text(
-                    'AI音频眼镜',
+                    product.subtitle,
                     style: TextStyle(
                       fontSize: screenWidth * 0.032,
                       fontWeight: FontWeight.bold,
@@ -87,7 +86,7 @@ class ProductCard extends StatelessWidget {
                   SizedBox(height: screenWidth * 0.016),
                   // 产品描述
                   Text(
-                    'AI 音频眼镜专属APP,支持影院…',
+                    product.description,
                     style: TextStyle(
                       fontSize: screenWidth * 0.026667,
                       color: Color(0xFF676C93),
@@ -100,7 +99,8 @@ class ProductCard extends StatelessWidget {
                   // 操作按钮
                   Row(
                     children: [
-                      Expanded(
+                      SizedBox(
+                        width: screenWidth * 0.16,
                         child: _buildActionButton(
                           '下载',
                           Colors.white,
@@ -110,7 +110,8 @@ class ProductCard extends StatelessWidget {
                         ),
                       ),
                       SizedBox(width: screenWidth * 0.024),
-                      Expanded(
+                      SizedBox(
+                        width: screenWidth * 0.16,
                         child: _buildActionButton(
                           '应用详情',
                           Color(0xFFD32D26),
@@ -129,122 +130,26 @@ class ProductCard extends StatelessWidget {
             Expanded(
               flex: 2,
               child: Container(
-                height: screenWidth * 0.3,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(screenWidth * 0.02),
-                  ),
-                  child: Stack(
-                    children: [
-                      // AI音频眼镜主体
-                      Positioned.fill(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(screenWidth * 0.02),
+                height: screenWidth * 0.26667,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(screenWidth * 0.02),
+                  child: product.productImages.isNotEmpty
+                      ? Image.asset(
+                          product.productImages.first,
+                          width: double.infinity,
+                          height: screenWidth * 0.26667,
+                          fit: BoxFit.cover,
+                        )
+                      : Container(
+                          width: double.infinity,
+                          height: screenWidth * 0.26667,
+                          color: Colors.grey[200],
+                          child: Icon(
+                            Icons.image,
+                            size: screenWidth * 0.1,
+                            color: Colors.grey[400],
                           ),
                         ),
-                      ),
-                      // 眼镜框架
-                      Positioned(
-                        left: screenWidth * 0.05,
-                        right: screenWidth * 0.05,
-                        top: screenWidth * 0.075,
-                        bottom: screenWidth * 0.075,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.black,
-                            borderRadius: BorderRadius.circular(screenWidth * 0.05),
-                          ),
-                          child: Stack(
-                            children: [
-                              // 左镜片
-                              Positioned(
-                                left: screenWidth * 0.02,
-                                top: screenWidth * 0.02,
-                                child: Container(
-                                  width: screenWidth * 0.0875,
-                                  height: screenWidth * 0.0625,
-                                  decoration: BoxDecoration(
-                                    color: Colors.transparent,
-                                    borderRadius: BorderRadius.circular(screenWidth * 0.03),
-                                    border: Border.all(color: Colors.white, width: 1),
-                                  ),
-                                ),
-                              ),
-                              // 右镜片
-                              Positioned(
-                                right: screenWidth * 0.02,
-                                top: screenWidth * 0.02,
-                                child: Container(
-                                  width: screenWidth * 0.0875,
-                                  height: screenWidth * 0.0625,
-                                  decoration: BoxDecoration(
-                                    color: Colors.transparent,
-                                    borderRadius: BorderRadius.circular(screenWidth * 0.03),
-                                    border: Border.all(color: Colors.white, width: 1),
-                                  ),
-                                ),
-                              ),
-                              // 鼻梁
-                              Positioned(
-                                left: screenWidth * 0.125,
-                                right: screenWidth * 0.125,
-                                top: screenWidth * 0.0375,
-                                bottom: screenWidth * 0.0375,
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.black,
-                                    borderRadius: BorderRadius.circular(screenWidth * 0.005),
-                                  ),
-                                ),
-                              ),
-                              // 左侧传感器
-                              Positioned(
-                                left: screenWidth * 0.005,
-                                top: screenWidth * 0.05,
-                                child: Container(
-                                  width: screenWidth * 0.015,
-                                  height: screenWidth * 0.015,
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[600],
-                                    shape: BoxShape.circle,
-                                  ),
-                                ),
-                              ),
-                              // 右侧传感器
-                              Positioned(
-                                right: screenWidth * 0.005,
-                                top: screenWidth * 0.05,
-                                child: Container(
-                                  width: screenWidth * 0.015,
-                                  height: screenWidth * 0.015,
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[600],
-                                    shape: BoxShape.circle,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      // NOVXX 品牌文字（在眼镜腿上）
-                      Positioned(
-                        right: screenWidth * 0.0375,
-                        top: screenWidth * 0.1375,
-                        child: Text(
-                          'NOVXX',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: screenWidth * 0.02,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
                 ),
               ),
             ),
