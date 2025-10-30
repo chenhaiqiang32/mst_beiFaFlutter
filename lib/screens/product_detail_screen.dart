@@ -17,6 +17,8 @@ class ProductDetailScreen extends StatefulWidget {
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
   bool _showDownloadDialog = false;
+  bool _isDescriptionExpanded = false; // 应用介绍 展开/收起
+  bool _isDescriptionOverflow = false; // 应用介绍是否超出行数
 
   @override
   Widget build(BuildContext context) {
@@ -358,22 +360,53 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                '应用介绍',
-                style: TextStyle(
-                  fontSize: screenWidth * 0.042666,
-                  fontWeight: FontWeight.bold,
-                  color: const Color(0xFF101828),
-                ),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      '应用介绍',
+                      style: TextStyle(
+                        fontSize: screenWidth * 0.042666,
+                        fontWeight: FontWeight.bold,
+                        color: const Color(0xFF101828),
+                      ),
+                    ),
+                  ),
+                  if (_isDescriptionOverflow)
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _isDescriptionExpanded = !_isDescriptionExpanded;
+                        });
+                      },
+                      child: Text(
+                        _isDescriptionExpanded ? '收起' : '展开',
+                        style: TextStyle(
+                          fontSize: screenWidth * 0.032,
+                          color: Colors.blue,
+                          decoration: TextDecoration.none,
+                          height: 1.2,
+                        ),
+                      ),
+                    ),
+                ],
               ),
               SizedBox(height: screenWidth * 0.02133),
-              Text(
-                widget.product.description,
+              _buildExpandableText(
+                text: widget.product.description,
                 style: TextStyle(
                   fontSize: screenWidth * 0.032,
                   color: const Color(0xFF808080),
                   height: 1.2,
                 ),
+                trimLines: 5,
+                onOverflowChanged: (overflow) {
+                  if (overflow != _isDescriptionOverflow) {
+                    setState(() {
+                      _isDescriptionOverflow = overflow;
+                    });
+                  }
+                },
               ),
               // SizedBox(height: screenWidth * 0.01666),
             ],
@@ -385,6 +418,39 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           color: const Color(0xFFE5E7EB),
         ),
       ],
+    );
+  }
+
+  // 可展开/收起文本（超过 trimLines 行时显示“展开/收起”）
+  Widget _buildExpandableText({
+    required String text,
+    required TextStyle style,
+    required int trimLines,
+    ValueChanged<bool>? onOverflowChanged,
+  }) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final TextPainter textPainter = TextPainter(
+          text: TextSpan(text: text, style: style),
+          maxLines: trimLines,
+          textDirection: TextDirection.ltr,
+          ellipsis: '…',
+        )..layout(maxWidth: constraints.maxWidth);
+
+        final bool isOverflow = textPainter.didExceedMaxLines;
+        if (onOverflowChanged != null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            onOverflowChanged(isOverflow);
+          });
+        }
+
+        return Text(
+          text,
+          style: style,
+          maxLines: _isDescriptionExpanded ? null : trimLines,
+          overflow: _isDescriptionExpanded ? TextOverflow.visible : TextOverflow.ellipsis,
+        );
+      },
     );
   }
 
