@@ -5,6 +5,69 @@ class DataService {
   factory DataService() => _instance;
   DataService._internal();
 
+  // Featured banner texts
+  String get featuredBannerTitle => '贝发 | 应用下载';
+  String get featuredBannerSubtitle => '一站式获取全系列官方应用,安全下载,快速开启专属服务';
+
+  // Common button texts
+  String get downloadButtonText => '下载';
+  String get detailsButtonText => '应用详情';
+
+  // Footer text
+  String get footerCopyright => '© 贝发集团股份有限公司 浙ICP备11016667号';
+
+  // Product detail screen texts
+  String get iosDownloadButtonText => 'iOS下载';
+  String get androidDownloadButtonText => 'Android下载';
+  String get iosDownloadSnackText => 'iOS下载功能';
+
+  String get statsLanguageLabel => '语言';
+  String get statsSizeLabel => '大小';
+  String get statsCurrentVersionLabel => '当前版本';
+  String get statsLatestLabel => '最新';
+  String get statsMbUnit => 'MB';
+
+  String get previewTitle => '预览';
+
+  String get appIntroTitle => '应用介绍';
+  String get expandText => '展开';
+  String get collapseText => '收起';
+  String get textEllipsisChar => '…';
+
+  String get infoTitle => '信息';
+  String get infoAppRatingLabel => '应用分级';
+  String get infoLastUpdateLabel => '最近更新';
+  String get infoDeveloperLabel => '开发者';
+  String get infoLanguageLabel => '语言';
+  String get infoSupplierLabel => '供应商';
+
+  String get accessibilityTitle => '辅助功能';
+  String get accessibilityDescription => '开发者尚未表明此 App 支持哪些辅助功能。';
+
+  // Download dialog texts
+  String get downloadDialogTitle => '下载';
+  String get fileSizeLabel => '文件大小';
+  String get recommendedAppsTitle => '推荐应用';
+  String get versionLabel => '版本';
+  String get downloadedProgressPrefix => '已下载';
+  String get downloadedProgressSuffix => '%';
+
+  // Download service texts
+  String get permissionStorageRequired => '需要存储权限才能下载应用';
+  String get cannotGetStorageDir => '无法获取存储目录';
+  String get downloadFailedPrefix => '下载失败: ';
+  String get openAppStoreFailedPrefix => '打开App Store失败: ';
+  String get progressPreparing => '准备下载...';
+  String get downloadCompletedTitle => '下载完成';
+  String get downloadCompletedContent => '应用已下载完成，是否立即安装？';
+  String get buttonInstallLater => '稍后安装';
+  String get buttonInstallNow => '立即安装';
+  String get installSnackTip => '请手动安装下载的APK文件';
+  String get downloadingTitle => '下载中...';
+  String get buttonCancel => '取消';
+  String get errorDialogTitle => '错误';
+  String get buttonOk => '确定';
+
   List<Product> getProducts() {
     return [
       Product(

@@ -48,7 +48,7 @@ class _DownloadDialogState extends State<DownloadDialog> {
                   children: [
                     Center(
                       child: Text(
-                        '下载',
+                        _dataService.downloadDialogTitle,
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: screenWidth * 0.03733,
@@ -114,7 +114,7 @@ class _DownloadDialogState extends State<DownloadDialog> {
                           Row(
                             children: [
                               Text(
-                                '文件大小: ${widget.product.appInfo.size}',
+                                '${_dataService.fileSizeLabel}: ${widget.product.appInfo.size}',
                                 style: TextStyle(
                                   color: Colors.grey,
                                   fontSize: screenWidth * 0.032,
@@ -155,7 +155,7 @@ class _DownloadDialogState extends State<DownloadDialog> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '推荐应用',
+                      _dataService.recommendedAppsTitle,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: screenWidth * 0.042667,
@@ -228,7 +228,7 @@ class _DownloadDialogState extends State<DownloadDialog> {
                             // 进度文字
                             Center(
                               child: Text(
-                                '已下载${(_downloadProgress * 100).toInt()}%',
+                                '${_dataService.downloadedProgressPrefix}${(_downloadProgress * 100).toInt()}${_dataService.downloadedProgressSuffix}',
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: screenWidth * 0.032,
@@ -294,7 +294,7 @@ class _DownloadDialogState extends State<DownloadDialog> {
                 Row(
                   children: [
                     Text(
-                      '版本',
+                      _dataService.versionLabel,
                       style: TextStyle(
                         color: Colors.grey,
                         fontSize: screenWidth * 0.026667,
@@ -322,7 +322,7 @@ class _DownloadDialogState extends State<DownloadDialog> {
               borderRadius: BorderRadius.circular(screenWidth * 0.04),
             ),
             child: Text(
-              '下载',
+              _dataService.downloadButtonText,
               style: TextStyle(
                 color: Colors.blue,
                 fontSize: screenWidth * 0.032,

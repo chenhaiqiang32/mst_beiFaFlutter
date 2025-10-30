@@ -3,28 +3,28 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:dio/dio.dart';
-import 'dart:io';
+import '../services/data_service.dart';
 
 class DownloadService {
   static final DownloadService _instance = DownloadService._internal();
   factory DownloadService() => _instance;
   DownloadService._internal();
 
-  final Dio _dio = Dio();
+  final DataService _dataService = DataService();
 
   Future<void> downloadAndroidApp(String url, String fileName, BuildContext context) async {
     try {
       // 请求存储权限
       final status = await Permission.storage.request();
       if (!status.isGranted) {
-        _showErrorDialog(context, '需要存储权限才能下载应用');
+        _showErrorDialog(context, _dataService.permissionStorageRequired);
         return;
       }
 
       // 获取下载目录
       final directory = await getExternalStorageDirectory();
       if (directory == null) {
-        _showErrorDialog(context, '无法获取存储目录');
+        _showErrorDialog(context, _dataService.cannotGetStorageDir);
         return;
       }
 
@@ -34,7 +34,7 @@ class DownloadService {
       _showDownloadProgress(context, url, filePath);
       
     } catch (e) {
-      _showErrorDialog(context, '下载失败: $e');
+      _showErrorDialog(context, '${_dataService.downloadFailedPrefix}$e');
     }
   }
 
@@ -45,7 +45,7 @@ class DownloadService {
         await launchUrl(uri, mode: LaunchMode.externalApplication);
       }
     } catch (e) {
-      print('打开App Store失败: $e');
+      print('${DataService().openAppStoreFailedPrefix}$e');
     }
   }
 
@@ -64,12 +64,12 @@ class DownloadService {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('错误'),
+        title: Text(DataService().errorDialogTitle),
         content: Text(message),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('确定'),
+            child: Text(DataService().buttonOk),
           ),
         ],
       ),
@@ -93,7 +93,8 @@ class _DownloadProgressDialog extends StatefulWidget {
 class _DownloadProgressDialogState extends State<_DownloadProgressDialog> {
   double _progress = 0.0;
   bool _isDownloading = true;
-  String _status = '准备下载...';
+  String _status = DataService().progressPreparing;
+  final DataService _dataService = DataService();
 
   @override
   void initState() {
@@ -112,7 +113,7 @@ class _DownloadProgressDialogState extends State<_DownloadProgressDialog> {
           if (total != -1) {
             setState(() {
               _progress = received / total;
-              _status = '已下载${(_progress * 100).toInt()}%';
+              _status = '${_dataService.downloadedProgressPrefix}${(_progress * 100).toInt()}${_dataService.downloadedProgressSuffix}';
             });
           }
         },
@@ -120,7 +121,7 @@ class _DownloadProgressDialogState extends State<_DownloadProgressDialog> {
 
       setState(() {
         _isDownloading = false;
-        _status = '下载完成';
+        _status = _dataService.downloadCompletedTitle;
       });
 
       // 延迟关闭对话框
@@ -143,19 +144,19 @@ class _DownloadProgressDialogState extends State<_DownloadProgressDialog> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('下载完成'),
-        content: const Text('应用已下载完成，是否立即安装？'),
+        title: Text(_dataService.downloadCompletedTitle),
+        content: Text(_dataService.downloadCompletedContent),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('稍后安装'),
+            child: Text(_dataService.buttonInstallLater),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(context);
               _installApp();
             },
-            child: const Text('立即安装'),
+            child: Text(_dataService.buttonInstallNow),
           ),
         ],
       ),
@@ -166,14 +167,14 @@ class _DownloadProgressDialogState extends State<_DownloadProgressDialog> {
     // 这里可以调用原生代码来安装APK
     // 由于Flutter的限制，需要平台特定的实现
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('请手动安装下载的APK文件')),
+      SnackBar(content: Text(_dataService.installSnackTip)),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('下载中...'),
+      title: Text(_dataService.downloadingTitle),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -188,7 +189,7 @@ class _DownloadProgressDialogState extends State<_DownloadProgressDialog> {
             onPressed: () {
               Navigator.pop(context);
             },
-            child: const Text('取消'),
+            child: Text(_dataService.buttonCancel),
           ),
       ],
     );

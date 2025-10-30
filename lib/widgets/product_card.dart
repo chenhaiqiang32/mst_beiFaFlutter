@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/product.dart';
+import '../services/data_service.dart';
 
 class ProductCard extends StatelessWidget {
   final Product product;
@@ -101,7 +102,7 @@ class ProductCard extends StatelessWidget {
                 SizedBox(
                   width: screenWidth * 0.16,
                   child: _buildActionButton(
-                    '下载',
+                    DataService().downloadButtonText,
                     Colors.white,
                     Color(0xFF000000),
                     onDownload,
@@ -112,7 +113,7 @@ class ProductCard extends StatelessWidget {
                 SizedBox(
                   width: screenWidth * 0.16,
                   child: _buildActionButton(
-                    '应用详情',
+                    DataService().detailsButtonText,
                     Color(0xFFD32D26),
                     Colors.white,
                     onDetails,

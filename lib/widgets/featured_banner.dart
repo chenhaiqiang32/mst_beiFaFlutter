@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../services/data_service.dart';
 
 class FeaturedBanner extends StatelessWidget {
   const FeaturedBanner({
@@ -9,6 +10,9 @@ class FeaturedBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     // 获取屏幕宽度用于自适应
     final screenWidth = MediaQuery.of(context).size.width;
+    final dataService = DataService();
+    final title = dataService.featuredBannerTitle;
+    final subtitle = dataService.featuredBannerSubtitle;
     
     return Container(
       width: double.infinity, // 铺满宽度
@@ -53,7 +57,7 @@ class FeaturedBanner extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        '贝发 | 应用下载',
+                        title,
                         style: TextStyle(
                           fontSize: screenWidth * 0.0426, // 字体大小为屏幕宽度的6%
                           fontWeight: FontWeight.bold,
@@ -65,7 +69,7 @@ class FeaturedBanner extends StatelessWidget {
                       ),
                       SizedBox(height: screenWidth * 0.015), // 间距为屏幕宽度的1.5%
                       Text(
-                        '一站式获取全系列官方应用,安全下载,快速开启专属服务',
+                        subtitle,
                         style: TextStyle(
                           fontSize: screenWidth * 0.02133, // 字体大小为屏幕宽度的3.5%
                           color: Color(0xFF667085),

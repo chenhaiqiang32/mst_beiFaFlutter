@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/product.dart';
 import '../widgets/header_widget.dart';
 import '../widgets/download_dialog.dart';
+import '../services/data_service.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final Product product;
@@ -110,7 +111,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     _buildDownloadButton(
-                      'iOS下载',
+                      DataService().iosDownloadButtonText,
                       Colors.white,
                       const Color(0xFFD32D26),
                       () => _handleIOSDownload(),
@@ -118,7 +119,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     ),
                     SizedBox(width: screenWidth * 0.02),
                     _buildDownloadButton(
-                      'Android下载',
+                      DataService().androidDownloadButtonText,
                       const Color(0xFFD32D26),
                       Colors.white,
                       () => _handleAndroidDownload(),
@@ -170,7 +171,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             children: [
               Expanded(
                 child: _buildStatItem(
-                  '语言',
+                  DataService().statsLanguageLabel,
                   widget.product.appInfo.supportedLanguages.first,
                   widget.product.appInfo.supportedLanguages[1],
                   screenWidth,
@@ -179,18 +180,18 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               _buildVerticalDivider(screenWidth),
               Expanded(
                 child: _buildStatItem(
-                  '大小',
+                  DataService().statsSizeLabel,
                   widget.product.appInfo.size.split(' ').first,
-                  'MB',
+                  DataService().statsMbUnit,
                   screenWidth,
                 ),
               ),
               _buildVerticalDivider(screenWidth),
               Expanded(
                 child: _buildStatItem(
-                  '当前版本',
+                  DataService().statsCurrentVersionLabel,
                   widget.product.appInfo.version,
-                  '最新',
+                  DataService().statsLatestLabel,
                   screenWidth,
                 ),
               ),
@@ -258,7 +259,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         Padding(
           padding: EdgeInsets.all(screenWidth * 0.042667),
           child: Text(
-            '预览',
+            DataService().previewTitle,
             style: TextStyle(
               fontSize: screenWidth * 0.04266,
               fontWeight: FontWeight.bold,
@@ -364,7 +365,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 children: [
                   Expanded(
                     child: Text(
-                      '应用介绍',
+                      DataService().appIntroTitle,
                       style: TextStyle(
                         fontSize: screenWidth * 0.042666,
                         fontWeight: FontWeight.bold,
@@ -380,7 +381,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         });
                       },
                       child: Text(
-                        _isDescriptionExpanded ? '收起' : '展开',
+                        _isDescriptionExpanded ? DataService().collapseText : DataService().expandText,
                         style: TextStyle(
                           fontSize: screenWidth * 0.032,
                           color: Colors.blue,
@@ -434,7 +435,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           text: TextSpan(text: text, style: style),
           maxLines: trimLines,
           textDirection: TextDirection.ltr,
-          ellipsis: '…',
+          ellipsis: DataService().textEllipsisChar,
         )..layout(maxWidth: constraints.maxWidth);
 
         final bool isOverflow = textPainter.didExceedMaxLines;
@@ -465,7 +466,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '信息',
+                DataService().infoTitle,
                 style: TextStyle(
                   fontSize: screenWidth * 0.0426,
                   fontWeight: FontWeight.bold,
@@ -481,11 +482,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildInfoItem('大小', widget.product.appInfo.size, screenWidth),
+                        _buildInfoItem(DataService().statsSizeLabel, widget.product.appInfo.size, screenWidth),
                         SizedBox(height: screenWidth * 0.053333),
-                        _buildInfoItem('应用分级', widget.product.appInfo.appRating, screenWidth),
+                        _buildInfoItem(DataService().infoAppRatingLabel, widget.product.appInfo.appRating, screenWidth),
                         SizedBox(height: screenWidth * 0.053333),
-                        _buildInfoItem('最近更新', widget.product.appInfo.lastUpdate, screenWidth),
+                        _buildInfoItem(DataService().infoLastUpdateLabel, widget.product.appInfo.lastUpdate, screenWidth),
                       ],
                     ),
                   ),
@@ -495,11 +496,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildInfoItem('开发者', widget.product.appInfo.developer, screenWidth),
+                        _buildInfoItem(DataService().infoDeveloperLabel, widget.product.appInfo.developer, screenWidth),
                         SizedBox(height: screenWidth * 0.053333),
-                        _buildInfoItem('语言', widget.product.appInfo.informationLanguage, screenWidth),
+                        _buildInfoItem(DataService().infoLanguageLabel, widget.product.appInfo.informationLanguage, screenWidth),
                         SizedBox(height: screenWidth * 0.053333),
-                        _buildInfoItem('供应商', widget.product.appInfo.developer, screenWidth),
+                        _buildInfoItem(DataService().infoSupplierLabel, widget.product.appInfo.developer, screenWidth),
                       ],
                     ),
                   ),
@@ -555,7 +556,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             children: [
               // 标题
               Text(
-                '辅助功能',
+                DataService().accessibilityTitle,
                 style: TextStyle(
                   fontSize: screenWidth * 0.0426666,
                   fontWeight: FontWeight.bold,
@@ -569,7 +570,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 children: [
                   Expanded(
                     child: Text(
-                      '开发者尚未表明此 App 支持哪些辅助功能。',
+                      DataService().accessibilityDescription,
                       style: TextStyle(
                         fontSize: screenWidth * 0.032,
                         color: const Color(0xFF808080),
