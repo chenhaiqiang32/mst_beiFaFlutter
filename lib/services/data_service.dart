@@ -31,10 +31,10 @@ class DataService {
           features: [ // 商品详情标签
             '社交',
           ],
+          informationLanguage: '乌尔都文和另外23种', // 信息语言
           downloadInfo: DownloadInfo(
             androidUrl: 'https://example.com/novxx.apk',
             iosUrl: 'https://apps.apple.com/app/novxx',
-            androidFileName: 'nova_ai_4600...7.apk',
           ),
         ),
       ),
@@ -61,10 +61,10 @@ class DataService {
           features: [
             '生活',
           ],
+          informationLanguage: '乌尔都文和另外23种',
           downloadInfo: DownloadInfo(
             androidUrl: 'https://example.com/origins.apk',
             iosUrl: 'https://apps.apple.com/app/origins',
-            androidFileName: 'origins_ai_2.1.0.apk',
           ),
         ),
       ),
@@ -91,10 +91,10 @@ class DataService {
           features: [
             '健康健美'
           ],
+          informationLanguage: '丹麦语和另外41种',
           downloadInfo: DownloadInfo(
             androidUrl: 'https://example.com/gloryfit.apk',
             iosUrl: 'https://apps.apple.com/app/gloryfit',
-            androidFileName: 'gloryfit_t54_3.2.1.apk',
           ),
         ),
       ),
@@ -110,7 +110,7 @@ class DataService {
           version: '1.0.1',
           size: '66 MB',
           supportedLanguages: ['RU', '+ 18种语言'],
-          developer: '深圳大拿智能设备有限公司',
+          developer: '俄文和另外17种',
           appRating: '18+',
           lastUpdate: '2025/08/30',
           screenshots: [
@@ -122,10 +122,10 @@ class DataService {
           features: [
             '效率'
           ],
+          informationLanguage: '中文、英语、俄语',
           downloadInfo: DownloadInfo(
             androidUrl: 'https://example.com/mosstalk.apk',
             iosUrl: 'https://apps.apple.com/app/mosstalk',
-            androidFileName: 'mosstalk_ai_1.5.3.apk',
           ),
         ),
       ),
@@ -153,10 +153,10 @@ class DataService {
           features: [
             '工具'
           ],
+          informationLanguage: '丹麦语和另外26种',
           downloadInfo: DownloadInfo(
             androidUrl: 'https://example.com/smartpen.apk',
             iosUrl: 'https://apps.apple.com/app/smartpen',
-            androidFileName: 'smartpen_2.0.1.apk',
           ),
         ),
       )
@@ -166,7 +166,7 @@ class DataService {
   List<Product> getRecommendedApps() {
     return [
       Product(
-        id: 'rec1',
+        id: '1',
         name: '起点读书',
         subtitle: '版本7.9.426',
         subSubtitle: '阅读应用',
@@ -181,6 +181,7 @@ class DataService {
           lastUpdate: '2025/01/01',
           screenshots: [],
           features: [],
+          informationLanguage: '中文',
           downloadInfo: DownloadInfo(
             androidUrl: 'https://example.com/qidian.apk',
             iosUrl: 'https://apps.apple.com/app/qidian',
@@ -189,7 +190,7 @@ class DataService {
         ),
       ),
       Product(
-        id: 'rec2',
+        id: '2',
         name: '番茄畅听',
         subtitle: '版本6.0.8.32',
         subSubtitle: '音频应用',
@@ -204,6 +205,7 @@ class DataService {
           lastUpdate: '2025/01/01',
           screenshots: [],
           features: [],
+          informationLanguage: '中文',
           downloadInfo: DownloadInfo(
             androidUrl: 'https://example.com/tomato.apk',
             iosUrl: 'https://apps.apple.com/app/tomato',
@@ -212,7 +214,7 @@ class DataService {
         ),
       ),
       Product(
-        id: 'rec3',
+        id: '3',
         name: '西瓜视频',
         subtitle: '版本9.8.2',
         subSubtitle: '视频应用',
@@ -227,6 +229,55 @@ class DataService {
           lastUpdate: '2025/01/01',
           screenshots: [],
           features: [],
+          informationLanguage: '中文',
+          downloadInfo: DownloadInfo(
+            androidUrl: 'https://example.com/xigua.apk',
+            iosUrl: 'https://apps.apple.com/app/xigua',
+            androidFileName: 'xigua_9.8.2.apk',
+          ),
+        ),
+      ),
+      Product(
+        id: '4',
+        name: '西瓜视频',
+        subtitle: '版本9.8.2',
+        subSubtitle: '视频应用',
+        description: '功能 隐私 权限',
+        logoUrl: 'assets/images/xigua_logo.png',
+        appInfo: AppInfo(
+          version: '9.8.2',
+          size: '52.1 MB',
+          supportedLanguages: ['CN'],
+          developer: '北京抖音信息服务有限公司',
+          appRating: '4+',
+          lastUpdate: '2025/01/01',
+          screenshots: [],
+          features: [],
+          informationLanguage: '中文',
+          downloadInfo: DownloadInfo(
+            androidUrl: 'https://example.com/xigua.apk',
+            iosUrl: 'https://apps.apple.com/app/xigua',
+            androidFileName: 'xigua_9.8.2.apk',
+          ),
+        ),
+      ),
+      Product(
+        id: '5',
+        name: '西瓜视频',
+        subtitle: '版本9.8.2',
+        subSubtitle: '视频应用',
+        description: '功能 隐私 权限',
+        logoUrl: 'assets/images/xigua_logo.png',
+        appInfo: AppInfo(
+          version: '9.8.2',
+          size: '52.1 MB',
+          supportedLanguages: ['CN'],
+          developer: '北京抖音信息服务有限公司',
+          appRating: '4+',
+          lastUpdate: '2025/01/01',
+          screenshots: [],
+          features: [],
+          informationLanguage: '中文',
           downloadInfo: DownloadInfo(
             androidUrl: 'https://example.com/xigua.apk',
             iosUrl: 'https://apps.apple.com/app/xigua',

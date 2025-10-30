@@ -23,7 +23,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF6F3FF),
+      backgroundColor: const Color.fromARGB(0, 46, 7, 7),
       body: SafeArea(
         child: Column(
           children: [
@@ -497,7 +497,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       children: [
                         _buildInfoItem('开发者', widget.product.appInfo.developer, screenWidth),
                         SizedBox(height: screenWidth * 0.053333),
-                        _buildInfoItem('语言', widget.product.appInfo.supportedLanguages.join('、'), screenWidth),
+                        _buildInfoItem('语言', widget.product.appInfo.informationLanguage, screenWidth),
                         SizedBox(height: screenWidth * 0.053333),
                         _buildInfoItem('供应商', widget.product.appInfo.developer, screenWidth),
                       ],

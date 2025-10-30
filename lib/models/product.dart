@@ -56,6 +56,7 @@ class AppInfo {
   final List<String> screenshots;
   final List<String> features;
   final DownloadInfo downloadInfo;
+  final String informationLanguage; // 信息语言字段
 
   AppInfo({
     required this.version,
@@ -67,6 +68,7 @@ class AppInfo {
     required this.screenshots,
     required this.features,
     required this.downloadInfo,
+    required this.informationLanguage,
   });
 
   factory AppInfo.fromJson(Map<String, dynamic> json) {
@@ -80,6 +82,7 @@ class AppInfo {
       screenshots: List<String>.from(json['screenshots'] ?? []),
       features: List<String>.from(json['features'] ?? []),
       downloadInfo: DownloadInfo.fromJson(json['downloadInfo'] ?? {}),
+      informationLanguage: json['informationLanguage'] ?? '',
     );
   }
 
@@ -94,6 +97,7 @@ class AppInfo {
       'screenshots': screenshots,
       'features': features,
       'downloadInfo': downloadInfo.toJson(),
+      'informationLanguage': informationLanguage,
     };
   }
 }
@@ -101,19 +105,19 @@ class AppInfo {
 class DownloadInfo {
   final String androidUrl;
   final String iosUrl;
-  final String androidFileName;
+  final String? androidFileName;
 
   DownloadInfo({
     required this.androidUrl,
     required this.iosUrl,
-    required this.androidFileName,
+    this.androidFileName,
   });
 
   factory DownloadInfo.fromJson(Map<String, dynamic> json) {
     return DownloadInfo(
       androidUrl: json['androidUrl'] ?? '',
       iosUrl: json['iosUrl'] ?? '',
-      androidFileName: json['androidFileName'] ?? '',
+      androidFileName: json['androidFileName'],
     );
   }
 

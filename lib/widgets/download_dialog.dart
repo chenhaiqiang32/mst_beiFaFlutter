@@ -96,18 +96,18 @@ class _DownloadDialogState extends State<DownloadDialog> {
                           Row(
                             children: [
                               Text(
-                                widget.product.appInfo.downloadInfo.androidFileName,
+                                widget.product.name,
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: screenWidth * 0.037333,
                                 ),
                               ),
                               SizedBox(width: screenWidth * 0.021333),
-                              Icon(
-                                Icons.edit,
-                                color: Colors.grey,
-                                size: screenWidth * 0.042667,
-                              ),
+                              // Icon(
+                              //   Icons.edit,
+                              //   color: Colors.grey,
+                              //   size: screenWidth * 0.042667,
+                              // ),
                             ],
                           ),
                           SizedBox(height: screenWidth * 0.010667),
@@ -121,24 +121,24 @@ class _DownloadDialogState extends State<DownloadDialog> {
                                 ),
                               ),
                               SizedBox(width: screenWidth * 0.021333),
-                              Container(
-                                padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.016, vertical: screenWidth * 0.001333),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF1A1A1A), // 深色背景
-                                  border: Border.all(
-                                    color: const Color(0xFFFFB74D), // 金色边框
-                                    width: 1,
-                                  ),
-                                  borderRadius: BorderRadius.circular(screenWidth * 0.08), // 更圆的胶囊形状
-                                ),
-                                child: Text(
-                                  '未知',
-                                  style: TextStyle(
-                                    color: const Color(0xFFFFB74D), // 金色文字
-                                    fontSize: screenWidth * 0.026667,
-                                  ),
-                                ),
-                              ),
+                              // Container(
+                              //   padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.016, vertical: screenWidth * 0.001333),
+                              //   decoration: BoxDecoration(
+                              //     color: const Color(0xFF1A1A1A), // 深色背景
+                              //     border: Border.all(
+                              //       color: const Color(0xFFFFB74D), // 金色边框
+                              //       width: 1,
+                              //     ),
+                              //     borderRadius: BorderRadius.circular(screenWidth * 0.08), // 更圆的胶囊形状
+                              //   ),
+                              //   child: Text(
+                              //     '未知',
+                              //     style: TextStyle(
+                              //       color: const Color(0xFFFFB74D), // 金色文字
+                              //       fontSize: screenWidth * 0.026667,
+                              //     ),
+                              //   ),
+                              // ),
                             ],
                           ),
                         ],
@@ -163,7 +163,11 @@ class _DownloadDialogState extends State<DownloadDialog> {
                       ),
                     ),
                     SizedBox(height: screenWidth * 0.032),
-                    ..._dataService.getRecommendedApps().map((app) => _buildRecommendedApp(app, screenWidth)),
+                    ..._dataService
+                        .getProducts()
+                        .where((p) => p.id != widget.product.id)
+                        .take(3)
+                        .map((app) => _buildRecommendedApp(app, screenWidth)),
                   ],
                 ),
               ),
@@ -256,22 +260,13 @@ class _DownloadDialogState extends State<DownloadDialog> {
       ),
       child: Row(
         children: [
-          Container(
-            width: screenWidth * 0.106667,
-            height: screenWidth * 0.106667,
-            decoration: BoxDecoration(
-              color: _getAppColor(app.name),
-              borderRadius: BorderRadius.circular(screenWidth * 0.021333),
-            ),
-            child: Center(
-              child: Text(
-                _getAppIcon(app.name),
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: screenWidth * 0.032,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(screenWidth * 0.021333),
+            child: Image.asset(
+              app.logoUrl,
+              width: screenWidth * 0.106667,
+              height: screenWidth * 0.106667,
+              fit: BoxFit.cover,
             ),
           ),
           SizedBox(width: screenWidth * 0.032),
@@ -280,7 +275,7 @@ class _DownloadDialogState extends State<DownloadDialog> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '${app.name} ${app.subtitle}',
+                  app.name,
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: screenWidth * 0.037333,
@@ -289,19 +284,31 @@ class _DownloadDialogState extends State<DownloadDialog> {
                 ),
                 SizedBox(height: screenWidth * 0.010667),
                 Text(
-                  app.description,
+                  app.subtitle,
                   style: TextStyle(
                     color: Colors.grey,
                     fontSize: screenWidth * 0.032,
                   ),
                 ),
                 SizedBox(height: screenWidth * 0.010667),
-                Text(
-                  app.appInfo.developer,
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: screenWidth * 0.026667,
-                  ),
+                Row(
+                  children: [
+                    Text(
+                      '版本',
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: screenWidth * 0.026667,
+                      ),
+                    ),
+                    SizedBox(width: screenWidth * 0.010667),
+                    Text(
+                      app.appInfo.version,
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: screenWidth * 0.026667,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -327,31 +334,7 @@ class _DownloadDialogState extends State<DownloadDialog> {
     );
   }
 
-  Color _getAppColor(String appName) {
-    switch (appName) {
-      case '起点读书':
-        return Colors.red;
-      case '番茄畅听':
-        return Colors.orange;
-      case '西瓜视频':
-        return Colors.red;
-      default:
-        return Colors.blue;
-    }
-  }
-
-  String _getAppIcon(String appName) {
-    switch (appName) {
-      case '起点读书':
-        return '起点';
-      case '番茄畅听':
-        return '🍅';
-      case '西瓜视频':
-        return '🍉';
-      default:
-        return 'A';
-    }
-  }
+  
 }
 
 
