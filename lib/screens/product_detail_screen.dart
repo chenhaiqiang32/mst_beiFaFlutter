@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/product.dart';
 import '../widgets/header_widget.dart';
 import '../widgets/download_dialog.dart';
-import '../services/data_service.dart';
+import '../services/localized_data.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final Product product;
@@ -23,6 +23,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Always use product data from current locale by id to avoid stale texts
+    final Product currentProduct = LocalizedData
+        .of(context)
+        .getProducts()
+        .firstWhere((p) => p.id == widget.product.id, orElse: () => widget.product);
     return Scaffold(
       backgroundColor: const Color.fromARGB(0, 46, 7, 7),
       body: SafeArea(
@@ -31,15 +36,15 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             const HeaderWidget(
               showBackButton: true,
             ),
-            _buildAppOverview(),
+            _buildAppOverview(currentProduct),
             Expanded(
               child: SingleChildScrollView(
-                child: _buildContentContainer(),
+                child: _buildContentContainer(currentProduct),
               ),
             ),
             if (_showDownloadDialog)
               DownloadDialog(
-                product: widget.product,
+                product: currentProduct,
                 onClose: () => setState(() => _showDownloadDialog = false),
               ),
           ],
@@ -48,7 +53,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     );
   }
 
-  Widget _buildAppOverview() {
+  Widget _buildAppOverview(Product product) {
     // 获取屏幕宽度用于自适应
     final screenWidth = MediaQuery.of(context).size.width;
     
@@ -67,7 +72,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(screenWidth * 0.04),
               child: Image.asset(
-                  widget.product.logoUrl,
+                  product.logoUrl,
                   width: screenWidth * 0.224,
                   height: screenWidth * 0.224,
                   fit: BoxFit.cover,
@@ -87,7 +92,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      widget.product.name,
+                      product.name,
                       style: TextStyle(
                         fontSize: screenWidth * 0.050666,
                         fontWeight: FontWeight.bold,
@@ -97,7 +102,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     ),
                     // SizedBox(height: screenWidth * 0.01),
                     Text(
-                      widget.product.subSubtitle,
+                      product.subSubtitle,
                       style: TextStyle(
                         fontSize: screenWidth * 0.032,
                         color: const Color(0xFF808080),
@@ -111,7 +116,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     _buildDownloadButton(
-                      DataService().iosDownloadButtonText,
+                      LocalizedData.of(context).iosDownloadButtonText,
                       Colors.white,
                       const Color(0xFFD32D26),
                       () => _handleIOSDownload(),
@@ -119,7 +124,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     ),
                     SizedBox(width: screenWidth * 0.02),
                     _buildDownloadButton(
-                      DataService().androidDownloadButtonText,
+                      LocalizedData.of(context).androidDownloadButtonText,
                       const Color(0xFFD32D26),
                       Colors.white,
                       () => _handleAndroidDownload(),
@@ -135,7 +140,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     );
   }
 
-  Widget _buildContentContainer() {
+  Widget _buildContentContainer(Product product) {
     final screenWidth = MediaQuery.of(context).size.width;
     
     return Container(
@@ -149,18 +154,18 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       ),
       child: Column(
         children: [
-          _buildAppStats(),
-          _buildPreviewSection(),
-          _buildFeatureTabs(),
-          _buildAppIntroduction(),
-          _buildInformationSection(),
+          _buildAppStats(product),
+          _buildPreviewSection(product),
+          _buildFeatureTabs(product),
+          _buildAppIntroduction(product),
+          _buildInformationSection(product),
           _buildNewFeaturesSection(),
         ],
       ),
     );
   }
 
-  Widget _buildAppStats() {
+  Widget _buildAppStats(Product product) {
     final screenWidth = MediaQuery.of(context).size.width;
     
     return Column(
@@ -171,27 +176,27 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             children: [
               Expanded(
                 child: _buildStatItem(
-                  DataService().statsLanguageLabel,
-                  widget.product.appInfo.supportedLanguages.first,
-                  widget.product.appInfo.supportedLanguages[1],
+                  LocalizedData.of(context).statsLanguageLabel,
+                  product.appInfo.supportedLanguages.first,
+                  product.appInfo.supportedLanguages[1],
                   screenWidth,
                 ),
               ),
               _buildVerticalDivider(screenWidth),
               Expanded(
                 child: _buildStatItem(
-                  DataService().statsSizeLabel,
-                  widget.product.appInfo.size.split(' ').first,
-                  DataService().statsMbUnit,
+                  LocalizedData.of(context).statsSizeLabel,
+                  product.appInfo.size.split(' ').first,
+                  LocalizedData.of(context).statsMbUnit,
                   screenWidth,
                 ),
               ),
               _buildVerticalDivider(screenWidth),
               Expanded(
                 child: _buildStatItem(
-                  DataService().statsCurrentVersionLabel,
-                  widget.product.appInfo.version,
-                  DataService().statsLatestLabel,
+                  LocalizedData.of(context).statsCurrentVersionLabel,
+                  product.appInfo.version,
+                  LocalizedData.of(context).statsLatestLabel,
                   screenWidth,
                 ),
               ),
@@ -250,7 +255,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     );
   }
 
-  Widget _buildPreviewSection() {
+  Widget _buildPreviewSection(Product product) {
     final screenWidth = MediaQuery.of(context).size.width;
     
     return Column(
@@ -258,8 +263,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       children: [
         Padding(
           padding: EdgeInsets.all(screenWidth * 0.042667),
-          child: Text(
-            DataService().previewTitle,
+            child: Text(
+            LocalizedData.of(context).previewTitle,
             style: TextStyle(
               fontSize: screenWidth * 0.04266,
               fontWeight: FontWeight.bold,
@@ -273,8 +278,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.032),
-            itemCount: widget.product.appInfo.screenshots.length > 0 
-                ? widget.product.appInfo.screenshots.length 
+            itemCount: product.appInfo.screenshots.length > 0 
+                ? product.appInfo.screenshots.length 
                 : 4, // 如果没有截图，显示4个占位符
             itemBuilder: (context, index) {
               return Container(
@@ -282,9 +287,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 margin: EdgeInsets.only(right: screenWidth * 0.042667),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(screenWidth * 0.042667),
-                  child: widget.product.appInfo.screenshots.length > index
+                  child: product.appInfo.screenshots.length > index
                       ? Image.asset(
-                          widget.product.appInfo.screenshots[index],
+                          product.appInfo.screenshots[index],
                           width: double.infinity,
                           height: double.infinity,
                           fit: BoxFit.cover,
@@ -309,9 +314,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     );
   }
 
-  Widget _buildFeatureTabs() {
+  Widget _buildFeatureTabs(Product product) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final tabs = widget.product.appInfo.features.take(4).toList(); // 取前4个功能
+    final tabs = product.appInfo.features.take(4).toList(); // 取前4个功能
     
     return Column(
       children: [
@@ -351,7 +356,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     );
   }
 
-  Widget _buildAppIntroduction() {
+  Widget _buildAppIntroduction(Product product) {
     final screenWidth = MediaQuery.of(context).size.width;
     
     return Column(
@@ -365,7 +370,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 children: [
                   Expanded(
                     child: Text(
-                      DataService().appIntroTitle,
+                      LocalizedData.of(context).appIntroTitle,
                       style: TextStyle(
                         fontSize: screenWidth * 0.042666,
                         fontWeight: FontWeight.bold,
@@ -381,7 +386,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         });
                       },
                       child: Text(
-                        _isDescriptionExpanded ? DataService().collapseText : DataService().expandText,
+                        _isDescriptionExpanded ? LocalizedData.of(context).collapseText : LocalizedData.of(context).expandText,
                         style: TextStyle(
                           fontSize: screenWidth * 0.032,
                           color: Colors.blue,
@@ -394,7 +399,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               ),
               SizedBox(height: screenWidth * 0.02133),
               _buildExpandableText(
-                text: widget.product.description,
+                text: product.description,
                 style: TextStyle(
                   fontSize: screenWidth * 0.032,
                   color: const Color(0xFF808080),
@@ -435,7 +440,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           text: TextSpan(text: text, style: style),
           maxLines: trimLines,
           textDirection: TextDirection.ltr,
-          ellipsis: DataService().textEllipsisChar,
+          ellipsis: LocalizedData.of(context).textEllipsisChar,
         )..layout(maxWidth: constraints.maxWidth);
 
         final bool isOverflow = textPainter.didExceedMaxLines;
@@ -455,7 +460,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     );
   }
 
-  Widget _buildInformationSection() {
+  Widget _buildInformationSection(Product product) {
     final screenWidth = MediaQuery.of(context).size.width;
     
     return Column(
@@ -466,7 +471,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                DataService().infoTitle,
+                LocalizedData.of(context).infoTitle,
                 style: TextStyle(
                   fontSize: screenWidth * 0.0426,
                   fontWeight: FontWeight.bold,
@@ -482,11 +487,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildInfoItem(DataService().statsSizeLabel, widget.product.appInfo.size, screenWidth),
+                        _buildInfoItem(LocalizedData.of(context).statsSizeLabel, product.appInfo.size, screenWidth),
                         SizedBox(height: screenWidth * 0.053333),
-                        _buildInfoItem(DataService().infoAppRatingLabel, widget.product.appInfo.appRating, screenWidth),
+                        _buildInfoItem(LocalizedData.of(context).infoAppRatingLabel, product.appInfo.appRating, screenWidth),
                         SizedBox(height: screenWidth * 0.053333),
-                        _buildInfoItem(DataService().infoLastUpdateLabel, widget.product.appInfo.lastUpdate, screenWidth),
+                        _buildInfoItem(LocalizedData.of(context).infoLastUpdateLabel, product.appInfo.lastUpdate, screenWidth),
                       ],
                     ),
                   ),
@@ -496,11 +501,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildInfoItem(DataService().infoDeveloperLabel, widget.product.appInfo.developer, screenWidth),
+                        _buildInfoItem(LocalizedData.of(context).infoDeveloperLabel, product.appInfo.developer, screenWidth),
                         SizedBox(height: screenWidth * 0.053333),
-                        _buildInfoItem(DataService().infoLanguageLabel, widget.product.appInfo.informationLanguage, screenWidth),
+                        _buildInfoItem(LocalizedData.of(context).infoLanguageLabel, product.appInfo.informationLanguage, screenWidth),
                         SizedBox(height: screenWidth * 0.053333),
-                        _buildInfoItem(DataService().infoSupplierLabel, widget.product.appInfo.developer, screenWidth),
+                        _buildInfoItem(LocalizedData.of(context).infoSupplierLabel, product.appInfo.developer, screenWidth),
                       ],
                     ),
                   ),
@@ -556,7 +561,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             children: [
               // 标题
               Text(
-                DataService().accessibilityTitle,
+                LocalizedData.of(context).accessibilityTitle,
                 style: TextStyle(
                   fontSize: screenWidth * 0.0426666,
                   fontWeight: FontWeight.bold,
@@ -570,7 +575,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 children: [
                   Expanded(
                     child: Text(
-                      DataService().accessibilityDescription,
+                      LocalizedData.of(context).accessibilityDescription,
                       style: TextStyle(
                         fontSize: screenWidth * 0.032,
                         color: const Color(0xFF808080),
@@ -619,8 +624,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: screenWidth * 0.18666,
-        height: screenWidth * 0.0666,
+        padding: EdgeInsets.symmetric(
+          horizontal: screenWidth * 0.026666,
+          vertical: screenWidth * 0.016,
+        ),
+        constraints: BoxConstraints(
+          minWidth: screenWidth * 0.18666,
+          minHeight: screenWidth * 0.0666,
+        ),
         decoration: BoxDecoration(
           color: backgroundColor,
           border: backgroundColor == Colors.white

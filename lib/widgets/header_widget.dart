@@ -56,7 +56,11 @@ class HeaderWidget extends StatelessWidget {
           Consumer<LanguageService>(
             builder: (context, languageService, child) {
               return GestureDetector(
-                onTap: () => _showLanguageDialog(context, languageService),
+                onTap: () {
+                  final isZh = languageService.currentLocale.languageCode == 'zh';
+                  final next = isZh ? const Locale('en', 'US') : const Locale('zh', 'CN');
+                  languageService.changeLanguage(next);
+                },
                 child: Row(
                   children: [
                     TranslateIcon(
@@ -77,27 +81,6 @@ class HeaderWidget extends StatelessWidget {
             },
           ),
         ],
-      ),
-    );
-  }
-
-  void _showLanguageDialog(BuildContext context, LanguageService languageService) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('选择语言 / Select Language'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: LanguageService.supportedLocales.map((locale) {
-            return ListTile(
-              title: Text(languageService.getLanguageName(locale)),
-              onTap: () {
-                languageService.changeLanguage(locale);
-                Navigator.pop(context);
-              },
-            );
-          }).toList(),
-        ),
       ),
     );
   }

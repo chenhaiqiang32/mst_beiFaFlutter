@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/product.dart';
-import '../services/data_service.dart';
+import '../services/localized_data.dart';
 
 class DownloadDialog extends StatefulWidget {
   final Product product;
@@ -18,7 +18,7 @@ class DownloadDialog extends StatefulWidget {
 
 class _DownloadDialogState extends State<DownloadDialog> {
   double _downloadProgress = 0.07; // 7% 下载进度
-  final DataService _dataService = DataService();
+  // Use localized service dynamically
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +48,7 @@ class _DownloadDialogState extends State<DownloadDialog> {
                   children: [
                     Center(
                       child: Text(
-                        _dataService.downloadDialogTitle,
+                        LocalizedData.of(context).downloadDialogTitle,
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: screenWidth * 0.03733,
@@ -114,7 +114,7 @@ class _DownloadDialogState extends State<DownloadDialog> {
                           Row(
                             children: [
                               Text(
-                                '${_dataService.fileSizeLabel}: ${widget.product.appInfo.size}',
+                                '${LocalizedData.of(context).fileSizeLabel}: ${widget.product.appInfo.size}',
                                 style: TextStyle(
                                   color: Colors.grey,
                                   fontSize: screenWidth * 0.032,
@@ -155,7 +155,7 @@ class _DownloadDialogState extends State<DownloadDialog> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      _dataService.recommendedAppsTitle,
+                      LocalizedData.of(context).recommendedAppsTitle,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: screenWidth * 0.042667,
@@ -163,7 +163,7 @@ class _DownloadDialogState extends State<DownloadDialog> {
                       ),
                     ),
                     SizedBox(height: screenWidth * 0.032),
-                    ..._dataService
+                    ...LocalizedData.of(context)
                         .getProducts()
                         .where((p) => p.id != widget.product.id)
                         .take(3)
@@ -228,7 +228,7 @@ class _DownloadDialogState extends State<DownloadDialog> {
                             // 进度文字
                             Center(
                               child: Text(
-                                '${_dataService.downloadedProgressPrefix}${(_downloadProgress * 100).toInt()}${_dataService.downloadedProgressSuffix}',
+                                '${LocalizedData.of(context).downloadedProgressPrefix}${(_downloadProgress * 100).toInt()}${LocalizedData.of(context).downloadedProgressSuffix}',
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: screenWidth * 0.032,
@@ -294,7 +294,7 @@ class _DownloadDialogState extends State<DownloadDialog> {
                 Row(
                   children: [
                     Text(
-                      _dataService.versionLabel,
+                      LocalizedData.of(context).versionLabel,
                       style: TextStyle(
                         color: Colors.grey,
                         fontSize: screenWidth * 0.026667,
@@ -322,7 +322,7 @@ class _DownloadDialogState extends State<DownloadDialog> {
               borderRadius: BorderRadius.circular(screenWidth * 0.04),
             ),
             child: Text(
-              _dataService.downloadButtonText,
+              LocalizedData.of(context).downloadButtonText,
               style: TextStyle(
                 color: Colors.blue,
                 fontSize: screenWidth * 0.032,

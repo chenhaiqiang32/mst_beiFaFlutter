@@ -96,8 +96,8 @@ class DataService {
           ],
           informationLanguage: '乌尔都文和另外23种', // 信息语言
           downloadInfo: DownloadInfo(
-            androidUrl: 'https://example.com/novxx.apk',
-            iosUrl: 'https://apps.apple.com/app/novxx',
+            androidUrl: 'https://product-v3-file.url.mo.cn/apk-prod/ucenter/Teamhelper_Glass_ycl_2025-10-10_17-33-22_prod_release_v1.9.10.apk',
+            iosUrl: 'https://apps.apple.com/cn/app/futora/id6751739046',
           ),
         ),
       ),
@@ -126,8 +126,8 @@ class DataService {
           ],
           informationLanguage: '乌尔都文和另外23种',
           downloadInfo: DownloadInfo(
-            androidUrl: 'https://example.com/origins.apk',
-            iosUrl: 'https://apps.apple.com/app/origins',
+            androidUrl: 'https://product-v3-file.url.mo.cn/apk-prod/ucenter/Teamhelper_Glass_ycl_2025-10-10_17-33-22_prod_release_v1.9.10.apk',
+            iosUrl: 'https://apps.apple.com/cn/app/futora/id6751739046',
           ),
         ),
       ),
@@ -156,8 +156,8 @@ class DataService {
           ],
           informationLanguage: '丹麦语和另外41种',
           downloadInfo: DownloadInfo(
-            androidUrl: 'https://example.com/gloryfit.apk',
-            iosUrl: 'https://apps.apple.com/app/gloryfit',
+            androidUrl: 'https://product-v3-file.url.mo.cn/apk-prod/ucenter/Teamhelper_Glass_ycl_2025-10-10_17-33-22_prod_release_v1.9.10.apk',
+            iosUrl: 'https://apps.apple.com/cn/app/futora/id6751739046',
           ),
         ),
       ),
@@ -187,8 +187,8 @@ class DataService {
           ],
           informationLanguage: '中文、英语、俄语',
           downloadInfo: DownloadInfo(
-            androidUrl: 'https://example.com/mosstalk.apk',
-            iosUrl: 'https://apps.apple.com/app/mosstalk',
+            androidUrl: 'https://product-v3-file.url.mo.cn/apk-prod/ucenter/Teamhelper_Glass_ycl_2025-10-10_17-33-22_prod_release_v1.9.10.apk',
+            iosUrl: 'https://apps.apple.com/cn/app/futora/id6751739046',
           ),
         ),
       ),
@@ -218,8 +218,8 @@ class DataService {
           ],
           informationLanguage: '丹麦语和另外26种',
           downloadInfo: DownloadInfo(
-            androidUrl: 'https://example.com/smartpen.apk',
-            iosUrl: 'https://apps.apple.com/app/smartpen',
+            androidUrl: 'https://product-v3-file.url.mo.cn/apk-prod/ucenter/Teamhelper_Glass_ycl_2025-10-10_17-33-22_prod_release_v1.9.10.apk',
+            iosUrl: 'https://apps.apple.com/cn/app/futora/id6751739046',
           ),
         ),
       )

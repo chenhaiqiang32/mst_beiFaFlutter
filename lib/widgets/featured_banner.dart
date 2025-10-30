@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../services/data_service.dart';
+import '../services/localized_data.dart';
 
 class FeaturedBanner extends StatelessWidget {
   const FeaturedBanner({
@@ -10,7 +10,7 @@ class FeaturedBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     // 获取屏幕宽度用于自适应
     final screenWidth = MediaQuery.of(context).size.width;
-    final dataService = DataService();
+    final dataService = LocalizedData.of(context);
     final title = dataService.featuredBannerTitle;
     final subtitle = dataService.featuredBannerSubtitle;
     

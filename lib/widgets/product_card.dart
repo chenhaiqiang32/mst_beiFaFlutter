@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/product.dart';
-import '../services/data_service.dart';
+import '../services/localized_data.dart';
 
 class ProductCard extends StatelessWidget {
   final Product product;
@@ -102,7 +102,7 @@ class ProductCard extends StatelessWidget {
                 SizedBox(
                   width: screenWidth * 0.16,
                   child: _buildActionButton(
-                    DataService().downloadButtonText,
+                    LocalizedData.of(context).downloadButtonText,
                     Colors.white,
                     Color(0xFF000000),
                     onDownload,
@@ -113,7 +113,7 @@ class ProductCard extends StatelessWidget {
                 SizedBox(
                   width: screenWidth * 0.16,
                   child: _buildActionButton(
-                    DataService().detailsButtonText,
+                    LocalizedData.of(context).detailsButtonText,
                     Color(0xFFD32D26),
                     Colors.white,
                     onDetails,

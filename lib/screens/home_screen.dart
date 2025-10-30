@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/product.dart';
-import '../services/data_service.dart';
+import '../services/localized_data.dart';
 import '../widgets/product_card.dart';
 import '../widgets/featured_banner.dart';
 import '../widgets/header_widget.dart';
@@ -15,21 +15,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final DataService _dataService = DataService();
-  List<Product> _products = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _loadProducts();
-  }
-
-  void _loadProducts() {
-    final products = _dataService.getProducts();
-    setState(() {
-      _products = products.toList(); // 显示所有产品，包括第一条
-    });
-  }
 
   void _navigateToDetail(Product product) {
     Navigator.push(
@@ -42,6 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final List<Product> products = LocalizedData.of(context).getProducts();
     return Scaffold(
       backgroundColor: Color(0xFFF5F5F7),
       body: SafeArea(
@@ -58,7 +44,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: SingleChildScrollView(
                       child: Column(
                         children: [
-                          ..._products.map((product) => Padding(
+                          ...products.map((product) => Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 16),
                             child: ProductCard(
                               product: product,
