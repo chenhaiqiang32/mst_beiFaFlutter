@@ -116,14 +116,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     _buildDownloadButton(
-                      LocalizedData.of(context).iosDownloadButtonText,
-                      Colors.white,
-                      const Color(0xFFD32D26),
-                      () => _handleIOSDownload(),
-                      screenWidth,
-                    ),
-                    SizedBox(width: screenWidth * 0.02),
-                    _buildDownloadButton(
                       LocalizedData.of(context).androidDownloadButtonText,
                       const Color(0xFFD32D26),
                       Colors.white,

@@ -18,7 +18,7 @@ class DataService {
 
   // Product detail screen texts
   String get iosDownloadButtonText => 'iOS下载';
-  String get androidDownloadButtonText => 'Android下载';
+  String get androidDownloadButtonText => '下载';
   String get iosDownloadSnackText => 'iOS下载功能';
 
   String get statsLanguageLabel => '语言';

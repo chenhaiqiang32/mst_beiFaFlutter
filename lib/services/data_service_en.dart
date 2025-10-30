@@ -20,7 +20,7 @@ class DataServiceEn {
 
   // Product detail screen texts
   String get iosDownloadButtonText => 'Download for iOS';
-  String get androidDownloadButtonText => 'Download for Android';
+  String get androidDownloadButtonText => 'Download';
   String get iosDownloadSnackText => 'iOS download feature';
 
   String get statsLanguageLabel => 'Language';
