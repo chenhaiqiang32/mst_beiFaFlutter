@@ -25,7 +25,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            const HeaderWidget(),
+            const HeaderWidget(
+              showBackButton: true,
+            ),
             _buildAppOverview(),
             Expanded(
               child: SingleChildScrollView(
@@ -49,75 +51,61 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     
     return Container(
       padding: EdgeInsets.all(screenWidth * 0.04),
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // 应用图标
-            Container(
-              width: screenWidth * 0.224,
-              height: screenWidth * 0.224,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(screenWidth * 0.04),
-              ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(screenWidth * 0.04),
-                  child: widget.product.productImages.isNotEmpty
-                      ? Image.asset(
-                          widget.product.productImages.first,
-                          width: screenWidth * 0.224,
-                          height: screenWidth * 0.224,
-                          fit: BoxFit.cover,
-                        )
-                      : Container(
-                          width: screenWidth * 0.224,
-                          height: screenWidth * 0.224,
-                          color: Colors.grey[200],
-                          child: Icon(
-                            Icons.image,
-                            size: screenWidth * 0.1,
-                            color: Colors.grey[400],
-                          ),
-                        ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // 左侧：应用图标
+          Container(
+            width: screenWidth * 0.224,
+            height: screenWidth * 0.224,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(screenWidth * 0.04),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(screenWidth * 0.04),
+              child: Image.asset(
+                  widget.product.logoUrl,
+                  width: screenWidth * 0.224,
+                  height: screenWidth * 0.224,
+                  fit: BoxFit.cover,
+                )
+            ),
+          ),
+          SizedBox(width: screenWidth * 0.046667),
+          // 右侧：文本和按钮区域（上下对齐）
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // 应用信息 - 文本内容
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      widget.product.name,
+                      style: TextStyle(
+                        fontSize: screenWidth * 0.050666,
+                        fontWeight: FontWeight.bold,
+                        color: const Color(0xFF101828),
+                        height: 1.6,
+                      ),
+                    ),
+                    // SizedBox(height: screenWidth * 0.01),
+                    Text(
+                      widget.product.subSubtitle,
+                      style: TextStyle(
+                        fontSize: screenWidth * 0.032,
+                        color: const Color(0xFF808080),
+                      ),
+                    ),
+                  ],
                 ),
-            ),
-            SizedBox(width: screenWidth * 0.046667),
-            // 应用信息 - 左侧文本内容
-            Expanded(
-              flex: 2,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    widget.product.name,
-                    style: TextStyle(
-                      fontSize: screenWidth * 0.050666,
-                      fontWeight: FontWeight.bold,
-                      color: const Color(0xFF101828),
-                      height: 1.6,
-                    ),
-                  ),
-                  SizedBox(height: screenWidth * 0.01),
-                  Text(
-                    widget.product.subtitle,
-                    style: TextStyle(
-                      fontSize: screenWidth * 0.032,
-                      color: const Color(0xFF808080),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(width: screenWidth * 0.04),
-            // 下载按钮 - 右侧按钮区域
-            Expanded(
-              flex: 4,
-              child: Align(
-                alignment: Alignment.center,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                SizedBox(height: screenWidth * 0.02),
+                // 下载按钮 - 垂直排列
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     _buildDownloadButton(
                       'iOS下载',
@@ -136,10 +124,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     ),
                   ],
                 ),
-              ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -182,7 +170,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 child: _buildStatItem(
                   '语言',
                   widget.product.appInfo.supportedLanguages.first,
-                  '+ 12种语言',
+                  widget.product.appInfo.supportedLanguages[1],
                   screenWidth,
                 ),
               ),
@@ -276,7 +264,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             ),
           ),
         ),
-        SizedBox(height: screenWidth * 0.04266),
+
         SizedBox(
           height: screenWidth * 0.528,
           child: ListView.builder(
@@ -287,18 +275,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 : 4, // 如果没有截图，显示4个占位符
             itemBuilder: (context, index) {
               return Container(
-                width: screenWidth * 0.48,
+                width: screenWidth * 0.244,
                 margin: EdgeInsets.only(right: screenWidth * 0.042667),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: screenWidth * 0.026667,
-                      offset: Offset(0, screenWidth * 0.005333),
-                    ),
-                  ],
-                ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(screenWidth * 0.042667),
                   child: widget.product.appInfo.screenshots.length > index
@@ -338,23 +316,21 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.042667, vertical: screenWidth * 0.021333),
           child: Row(
             children: tabs.map((tab) {
-              return Expanded(
-                child: Container(
-                  margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.010667),
-                  width: screenWidth * 0.17733, // 133px 换算
-                  height: screenWidth * 0.072, // 54px 换算
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF8F8F8), // #F8F8F8
-                    borderRadius: BorderRadius.circular(27), // 27px 换算
-                  ),
-                  child: Center(
-                    child: Text(
-                      tab,
-                      style: TextStyle(
-                        color: const Color(0xFF808080), // #808080
-                        fontSize: screenWidth * 0.032, // 24px 换算
-                        fontWeight: FontWeight.w500,
-                      ),
+              return Container(
+                margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.010667),
+                width: screenWidth * 0.17733, // 固定宽度 133px
+                height: screenWidth * 0.07, // 固定高度 54px
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF8F8F8), // #F8F8F8
+                  borderRadius: BorderRadius.circular(27), // 27px 换算
+                ),
+                child: Center(
+                  child: Text(
+                    tab,
+                    style: TextStyle(
+                      color: const Color(0xFF808080), // #808080
+                      fontSize: screenWidth * 0.032, // 24px 换算
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ),
@@ -536,20 +512,20 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     ),
                   ),
                   SizedBox(width: screenWidth * 0.021333),
-                  GestureDetector(
-                    onTap: () {
-                      // 处理"进一步了解"点击事件
-                    },
-                    child: Text(
-                      '进一步了解',
-                      style: TextStyle(
-                        fontSize: screenWidth * 0.032,
-                        color: Colors.blue,
-                        decoration: TextDecoration.none,
-                        height: -0.8,
-                      ),
-                    ),
-                  ),
+                  // GestureDetector(
+                  //   onTap: () {
+                  //     // 处理"进一步了解"点击事件
+                  //   },
+                  //   child: Text(
+                  //     '进一步了解',
+                  //     style: TextStyle(
+                  //       fontSize: screenWidth * 0.032,
+                  //       color: Colors.blue,
+                  //       decoration: TextDecoration.none,
+                  //       height: -0.8,
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               ),
             ],

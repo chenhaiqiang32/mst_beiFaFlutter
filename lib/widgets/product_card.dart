@@ -20,138 +20,106 @@ class ProductCard extends StatelessWidget {
     
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: [
-          BoxShadow(
-            color: Color(0x000000).withOpacity(0.08),
-            blurRadius: screenWidth * 0.02,
-            offset: Offset(0, screenWidth * 0.005),
-          ),
-        ],
+        // borderRadius: BorderRadius.circular(18),
+        image: product.backgroundImageUrl != null
+            ? DecorationImage(
+                image: AssetImage(product.backgroundImageUrl!),
+                fit: BoxFit.cover,
+                opacity: 1,
+              )
+            : null,
       ),
       child: Padding(
         padding: EdgeInsets.only(top: screenWidth * 0.04933, right: screenWidth * 0.02, bottom: screenWidth * 0.04266, left: screenWidth * 0.04),
-        child: Row(
+        child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // 左侧内容区域
-            Expanded(
-              flex: 3,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // NOVXX 品牌标识
-                  Row(
-                    children: [
-                      Container(
-                        width: screenWidth * 0.0426667,
-                        height: screenWidth * 0.0426667,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(screenWidth * 0.008),
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(screenWidth * 0.008),
-                          child: Image.asset(
-                            product.logoUrl,
-                            width: screenWidth * 0.0426667,
-                            height: screenWidth * 0.0426667,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: screenWidth * 0.01),
-                      Text(
-                        product.name,
-                        style: TextStyle(
-                          fontSize: screenWidth * 0.03733,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF1D1D1F),
-                          letterSpacing: 0.5,
-                        ),
-                      ),
-                    ],
+            // NOVXX 品牌标识
+            Row(
+              children: [
+                Container(
+                  width: screenWidth * 0.0426667,
+                  height: screenWidth * 0.0426667,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(screenWidth * 0.008),
                   ),
-                  SizedBox(height: screenWidth * 0.03),
-                  // 产品标题
-                  Text(
-                    product.subtitle,
-                    style: TextStyle(
-                      fontSize: screenWidth * 0.032,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF101828),
-                      height: 1.2,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(screenWidth * 0.008),
+                    child: Image.asset(
+                      product.logoUrl,
+                      width: screenWidth * 0.0426667,
+                      height: screenWidth * 0.0426667,
+                      fit: BoxFit.cover,
                     ),
                   ),
-                  SizedBox(height: screenWidth * 0.016),
-                  // 产品描述
-                  Text(
-                    product.description,
-                    style: TextStyle(
-                      fontSize: screenWidth * 0.026667,
-                      color: Color(0xFF676C93),
-                      height: 1.4,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
+                ),
+                SizedBox(width: screenWidth * 0.01),
+                Text(
+                  product.name,
+                  style: TextStyle(
+                    fontSize: screenWidth * 0.03733,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF1D1D1F),
+                    letterSpacing: 0.5,
                   ),
-                  SizedBox(height: screenWidth * 0.032),
-                  // 操作按钮
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: screenWidth * 0.16,
-                        child: _buildActionButton(
-                          '下载',
-                          Colors.white,
-                          Color(0xFF000000),
-                          onDownload,
-                          screenWidth,
-                        ),
-                      ),
-                      SizedBox(width: screenWidth * 0.024),
-                      SizedBox(
-                        width: screenWidth * 0.16,
-                        child: _buildActionButton(
-                          '应用详情',
-                          Color(0xFFD32D26),
-                          Colors.white,
-                          onDetails,
-                          screenWidth,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+                ),
+              ],
+            ),
+            SizedBox(height: screenWidth * 0.03),
+            // 产品标题
+            Text(
+              product.subtitle,
+              style: TextStyle(
+                fontSize: screenWidth * 0.032,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF101828),
+                height: 1.2,
               ),
             ),
-            SizedBox(width: screenWidth * 0.04),
-            // 右侧产品图片区域
-            Expanded(
-              flex: 2,
-              child: Container(
-                height: screenWidth * 0.26667,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(screenWidth * 0.02),
-                  child: product.productImages.isNotEmpty
-                      ? Image.asset(
-                          product.productImages.first,
-                          width: double.infinity,
-                          height: screenWidth * 0.26667,
-                          fit: BoxFit.cover,
-                        )
-                      : Container(
-                          width: double.infinity,
-                          height: screenWidth * 0.26667,
-                          color: Colors.grey[200],
-                          child: Icon(
-                            Icons.image,
-                            size: screenWidth * 0.1,
-                            color: Colors.grey[400],
-                          ),
-                        ),
+            SizedBox(height: screenWidth * 0.016),
+            // 产品描述
+            SizedBox(
+              width: screenWidth * 0.408,
+              child: Tooltip(
+                message: product.description,
+                child: Text(
+                  product.description,
+                  style: TextStyle(
+                    fontSize: screenWidth * 0.026667,
+                    color: Color(0xFF676C93),
+                    height: 1.4,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
+            ),
+            SizedBox(height: screenWidth * 0.032),
+            // 操作按钮
+            Row(
+              children: [
+                SizedBox(
+                  width: screenWidth * 0.16,
+                  child: _buildActionButton(
+                    '下载',
+                    Colors.white,
+                    Color(0xFF000000),
+                    onDownload,
+                    screenWidth,
+                  ),
+                ),
+                SizedBox(width: screenWidth * 0.024),
+                SizedBox(
+                  width: screenWidth * 0.16,
+                  child: _buildActionButton(
+                    '应用详情',
+                    Color(0xFFD32D26),
+                    Colors.white,
+                    onDetails,
+                    screenWidth,
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -171,7 +139,7 @@ class ProductCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: screenWidth * 0.05333,
+        height: screenWidth * 0.06,
         decoration: BoxDecoration(
           color: backgroundColor,
           border: backgroundColor == Colors.white

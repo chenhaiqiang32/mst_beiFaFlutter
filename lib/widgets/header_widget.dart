@@ -5,7 +5,14 @@ import 'beifa_logo.dart';
 import 'translate_icon.dart';
 
 class HeaderWidget extends StatelessWidget {
-  const HeaderWidget({super.key});
+  final bool showBackButton;
+  final VoidCallback? onBackPressed;
+
+  const HeaderWidget({
+    super.key,
+    this.showBackButton = false,
+    this.onBackPressed,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +29,24 @@ class HeaderWidget extends StatelessWidget {
         children: [
           Row(
             children: [
+              if (showBackButton) ...[
+                GestureDetector(
+                  onTap: onBackPressed ?? () => Navigator.pop(context),
+                  child: Container(
+                    width: screenWidth * 0.08, // 60px基于750px屏幕
+                    height: screenWidth * 0.08,
+                    decoration: BoxDecoration(
+                      color: Colors.transparent,
+                    ),
+                    child: Icon(
+                      Icons.arrow_back_ios,
+                      color: Colors.black,
+                      size: screenWidth * 0.04, // 30px基于750px屏幕
+                    ),
+                  ),
+                ),
+                SizedBox(width: screenWidth * 0.026667), // 20px基于750px屏幕
+              ],
               BeifaLogo(
                 width: screenWidth * 0.17866,   // 134px基于750px屏幕
                 height: screenWidth * 0.03733, // 28px基于750px屏幕

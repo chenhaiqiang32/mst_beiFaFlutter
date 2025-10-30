@@ -114,7 +114,7 @@ class _DownloadDialogState extends State<DownloadDialog> {
                           Row(
                             children: [
                               Text(
-                                '文件大小: ${widget.product.appInfo.downloadInfo.androidFileSize}',
+                                '文件大小: ${widget.product.appInfo.size}',
                                 style: TextStyle(
                                   color: Colors.grey,
                                   fontSize: screenWidth * 0.032,

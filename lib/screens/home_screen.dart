@@ -59,14 +59,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Column(
                         children: [
                           ..._products.map((product) => Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
                             child: ProductCard(
                               product: product,
                               onDownload: () => _navigateToDetail(product),
                               onDetails: () => _navigateToDetail(product),
                             ),
                           )),
-                          const SizedBox(height: 80), // 为底部固定的footer留出空间
+                          const SizedBox(height: 10), // 为底部固定的footer留出空间
                         ],
                       ),
                     ),
