@@ -83,8 +83,8 @@ class DataServiceEn {
         subSubtitle: 'Social',
         description:
             'Provide convenient, efficient, and accurate cross-app translation to help users communicate seamlessly in multilingual scenarios and improve efficiency and quality.',
-        logoUrl: 'images/logo/1.png',
-        backgroundImageUrl: 'images/listBg/1.png',
+        logoUrl: 'assets/images/logo/1.png',
+        backgroundImageUrl: 'assets/images/listBg/1.png',
         appInfo: AppInfo(
           version: '1.0.1',
           size: '129.8MB',
@@ -93,10 +93,10 @@ class DataServiceEn {
           appRating: '4+',
           lastUpdate: '2025/08/30',
           screenshots: [
-            'images/productImages/origins/zh/1.png',
-            'images/productImages/origins/zh/2.png',
-            'images/productImages/origins/zh/3.png',
-            'images/productImages/origins/zh/4.png',
+            'assets/images/productImages/origins/zh/1.png',
+            'assets/images/productImages/origins/zh/2.png',
+            'assets/images/productImages/origins/zh/3.png',
+            'assets/images/productImages/origins/zh/4.png',
           ],
           features: [
             'Social',
@@ -115,8 +115,8 @@ class DataServiceEn {
         subSubtitle: 'AI Translation & Voice Assistant',
         description:
             'Futora is an AI-powered real-time voice assistant combined with audio hardware to deliver efficient cross-language communication. It integrates simultaneous interpretation, meeting minutes, real-time interactive translation, and AI Q&A to help you communicate without barriers in meetings, business, learning, and daily use.',
-        logoUrl: 'images/logo/2.png',
-        backgroundImageUrl: 'images/listBg/2.png',
+        logoUrl: 'assets/images/logo/2.png',
+        backgroundImageUrl: 'assets/images/listBg/2.png',
         appInfo: AppInfo(
           version: '1.0.2',
           size: '42.4MB',
@@ -125,9 +125,9 @@ class DataServiceEn {
           appRating: '8+',
           lastUpdate: '2025/08/30',
           screenshots: [
-            'images/productImages/futora/zh/1.png',
-            'images/productImages/futora/zh/2.png',
-            'images/productImages/futora/zh/3.png',
+            'assets/images/productImages/futora/zh/1.png',
+            'assets/images/productImages/futora/zh/2.png',
+            'assets/images/productImages/futora/zh/3.png',
           ],
           features: [
             'Lifestyle',
@@ -146,8 +146,8 @@ class DataServiceEn {
         subSubtitle: 'Health & Fitness',
         description:
             'Stay active and healthy with FitCloudPro. Track daily steps, calories, distance, and more. Monitor sleep, receive notifications, set reminders, and sync data with Apple Health via HealthKit.',
-        logoUrl: 'images/logo/3.png',
-        backgroundImageUrl: 'images/listBg/3.png',
+        logoUrl: 'assets/images/logo/3.png',
+        backgroundImageUrl: 'assets/images/listBg/3.png',
         appInfo: AppInfo(
           version: '1.0.1',
           size: '313.9MB',
@@ -156,9 +156,9 @@ class DataServiceEn {
           appRating: '9+',
           lastUpdate: '2025/08/30',
           screenshots: [
-            'images/productImages/fitCloudPro/zh/1.png',
-            'images/productImages/fitCloudPro/zh/2.png',
-            'images/productImages/fitCloudPro/zh/3.png',
+            'assets/images/productImages/fitCloudPro/zh/1.png',
+            'assets/images/productImages/fitCloudPro/zh/2.png',
+            'assets/images/productImages/fitCloudPro/zh/3.png',
           ],
           features: [
             'Health & Fitness'
@@ -177,8 +177,8 @@ class DataServiceEn {
         subSubtitle: 'DanaID Agent',
         description:
             'DanaID is an intelligent assistant app that connects to smart wearables such as speakers, earbuds, and watches. Chat naturally with your devices, get knowledge, voice assistant, live transcription, translation across 140+ languages, and more for work and life.',
-        logoUrl: 'images/logo/4.png',
-        backgroundImageUrl: 'images/listBg/4.png',
+        logoUrl: 'assets/images/logo/4.png',
+        backgroundImageUrl: 'assets/images/listBg/4.png',
         appInfo: AppInfo(
           version: '1.0.1',
           size: '66 MB',
@@ -187,10 +187,10 @@ class DataServiceEn {
           appRating: '18+',
           lastUpdate: '2025/08/30',
           screenshots: [
-            'images/productImages/danaID/zh/1.png',
-            'images/productImages/danaID/zh/2.png',
-            'images/productImages/danaID/zh/3.png',
-            'images/productImages/danaID/zh/4.png',
+            'assets/images/productImages/danaID/zh/1.png',
+            'assets/images/productImages/danaID/zh/2.png',
+            'assets/images/productImages/danaID/zh/3.png',
+            'assets/images/productImages/danaID/zh/4.png',
           ],
           features: [
             'Productivity'
@@ -209,8 +209,8 @@ class DataServiceEn {
         subSubtitle: 'AI Noise-canceling Meeting Translator',
         description:
             'Nebula Buds AI Interpreting App supports up to 133 languages. Photo translation, AI voice wake, audio/video call translation, dual-ear mode, meeting minutes with speaker separation, AI chat, and AI image generation.',
-        logoUrl: 'images/logo/5.png',
-        backgroundImageUrl: 'images/listBg/5.png',
+        logoUrl: 'assets/images/logo/5.png',
+        backgroundImageUrl: 'assets/images/listBg/5.png',
         appInfo: AppInfo(
           version: '1.0.1',
           size: '140.2MB',
@@ -219,10 +219,10 @@ class DataServiceEn {
           appRating: '18+',
           lastUpdate: '2025/08/30',
           screenshots: [
-            'images/productImages/nebulabuds/zh/1.png',
-            'images/productImages/nebulabuds/zh/2.png',
-            'images/productImages/nebulabuds/zh/3.png',
-            'images/productImages/nebulabuds/zh/4.png',
+            'assets/images/productImages/nebulabuds/zh/1.png',
+            'assets/images/productImages/nebulabuds/zh/2.png',
+            'assets/images/productImages/nebulabuds/zh/3.png',
+            'assets/images/productImages/nebulabuds/zh/4.png',
           ],
           features: [
             'Tools'

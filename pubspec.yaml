@@ -32,7 +32,37 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/images/
+    - assets/images/beifa_logo.png
+    - assets/images/featured_banner_bg.png
+    - assets/images/translate_icon.png
+    - assets/images/logo/1.png
+    - assets/images/logo/2.png
+    - assets/images/logo/3.png
+    - assets/images/logo/4.png
+    - assets/images/logo/5.png
+    - assets/images/listBg/1.png
+    - assets/images/listBg/2.png
+    - assets/images/listBg/3.png
+    - assets/images/listBg/4.png
+    - assets/images/listBg/5.png
+    - assets/images/productImages/origins/zh/1.png
+    - assets/images/productImages/origins/zh/2.png
+    - assets/images/productImages/origins/zh/3.png
+    - assets/images/productImages/origins/zh/4.png
+    - assets/images/productImages/futora/zh/1.png
+    - assets/images/productImages/futora/zh/2.png
+    - assets/images/productImages/futora/zh/3.png
+    - assets/images/productImages/fitCloudPro/zh/1.png
+    - assets/images/productImages/fitCloudPro/zh/2.png
+    - assets/images/productImages/fitCloudPro/zh/3.png
+    - assets/images/productImages/danaID/zh/1.png
+    - assets/images/productImages/danaID/zh/2.png
+    - assets/images/productImages/danaID/zh/3.png
+    - assets/images/productImages/danaID/zh/4.png
+    - assets/images/productImages/nebulabuds/zh/1.png
+    - assets/images/productImages/nebulabuds/zh/2.png
+    - assets/images/productImages/nebulabuds/zh/3.png
+    - assets/images/productImages/nebulabuds/zh/4.png
   # fonts:
   #   - family: PingFang
   #     fonts:
