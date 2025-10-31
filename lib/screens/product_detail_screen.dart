@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
+import '../services/download_service.dart';
 import '../models/product.dart';
 import '../widgets/header_widget.dart';
 import '../widgets/download_dialog.dart';
@@ -119,7 +122,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       LocalizedData.of(context).androidDownloadButtonText,
                       const Color(0xFFD32D26),
                       Colors.white,
-                      () => _handleAndroidDownload(),
+                      () => _handleDownload(product),
                       screenWidth,
                     ),
                   ],
@@ -645,17 +648,31 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     );
   }
 
-  void _handleIOSDownload() {
-    // 处理iOS下载
+  void _handleDownload(Product product) {
+    print('[DetailScreen] Download clicked for product=${product.id} name=${product.name}');
+    if (kIsWeb) {
+      print('[DetailScreen] Web platform detected. Showing snackbar.');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('当前平台不支持下载，仅在手机上可用')),
+      );
+      return;
+    }
+    if (Platform.isIOS) {
+      print('[DetailScreen] Detected iOS. Opening App Store url=${product.appInfo.downloadInfo.iosUrl}');
+      DownloadService().openIOSAppStore(product.appInfo.downloadInfo.iosUrl);
+      return;
+    }
+    if (Platform.isAndroid) {
+      print('[DetailScreen] Detected Android. Showing DownloadDialog for url=${product.appInfo.downloadInfo.androidUrl}');
+      setState(() {
+        _showDownloadDialog = true;
+      });
+      return;
+    }
+    print('[DetailScreen] Unsupported platform. Showing snackbar.');
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('iOS下载功能')),
+      const SnackBar(content: Text('当前平台不支持下载，仅在手机上可用')),
     );
-  }
-
-  void _handleAndroidDownload() {
-    setState(() {
-      _showDownloadDialog = true;
-    });
   }
 }
 

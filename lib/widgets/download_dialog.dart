@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'dart:io' show Platform;
+import 'package:dio/dio.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import '../models/product.dart';
 import '../services/localized_data.dart';
 
@@ -17,8 +22,79 @@ class DownloadDialog extends StatefulWidget {
 }
 
 class _DownloadDialogState extends State<DownloadDialog> {
-  double _downloadProgress = 0.07; // 7% 下载进度
-  // Use localized service dynamically
+  double _downloadProgress = 0.0;
+  bool _started = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _maybeStartDownload();
+  }
+
+  Future<void> _maybeStartDownload() async {
+    if (kIsWeb) {
+      print('[DownloadDialog] Web platform detected. Skip download start.');
+      return;
+    }
+    if (!Platform.isAndroid) {
+      print('[DownloadDialog] Non-Android platform detected. Skip download start.');
+      return;
+    }
+    if (_started) return;
+    _started = true;
+    try {
+      print('[DownloadDialog] Requesting storage permission...');
+      final status = await Permission.storage.request();
+      print('[DownloadDialog] Storage permission isGranted=${status.isGranted}');
+      if (!status.isGranted) {
+        return;
+      }
+
+      final dir = await getExternalStorageDirectory();
+      print('[DownloadDialog] getExternalStorageDirectory -> ${dir?.path}');
+      if (dir == null) {
+        return;
+      }
+
+      final url = widget.product.appInfo.downloadInfo.androidUrl;
+      final providedName = widget.product.appInfo.downloadInfo.androidFileName;
+      final fallbackName = Uri.tryParse(url)?.pathSegments.isNotEmpty == true
+          ? Uri.parse(url).pathSegments.last
+          : '${widget.product.name}.apk';
+      final fileName = providedName == null || providedName.isEmpty ? fallbackName : providedName;
+      final filePath = '${dir.path}/$fileName';
+      print('[DownloadDialog] Start download. url=$url fileName=$fileName filePath=$filePath');
+
+      final dio = Dio();
+      await dio.download(
+        url,
+        filePath,
+        onReceiveProgress: (received, total) {
+          if (!mounted) return;
+          if (total <= 0) return;
+          final p = received / total;
+          if ((p * 100).toInt() % 2 == 0) {
+            print('[DownloadDialog] Progress ${(p * 100).toStringAsFixed(0)}% ($received/$total)');
+          }
+          setState(() {
+            _downloadProgress = received / total;
+          });
+        },
+      );
+
+      if (!mounted) return;
+      setState(() {
+        _downloadProgress = 1.0;
+      });
+      print('[DownloadDialog] Download completed.');
+    } catch (_) {
+      print('[DownloadDialog] Download error: $_');
+      if (!mounted) return;
+      setState(() {
+        _downloadProgress = 0.0;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

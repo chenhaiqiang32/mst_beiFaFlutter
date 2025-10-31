@@ -40,9 +40,11 @@ class DownloadService {
 
   Future<void> openIOSAppStore(String url) async {
     try {
+      print('[DownloadService] Attempt to open iOS App Store url=$url');
       final uri = Uri.parse(url);
       if (await canLaunchUrl(uri)) {
         await launchUrl(uri, mode: LaunchMode.externalApplication);
+        print('[DownloadService] Launch success');
       }
     } catch (e) {
       print('${DataService().openAppStoreFailedPrefix}$e');
