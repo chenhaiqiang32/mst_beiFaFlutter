@@ -79,6 +79,7 @@ class DataServiceEn {
   String get downloadSuccessMessage => 'File has been downloaded to:';
   String get buttonOpenFolder => 'Open Folder';
   String get buttonInstallApk => 'Install App';
+  String get installedLabel => 'Installed';
 
   List<Product> getProducts() {
     return [

@@ -73,6 +73,7 @@ class DataService {
   String get downloadSuccessMessage => '文件已成功下载到以下位置：';
   String get buttonOpenFolder => '打开文件夹';
   String get buttonInstallApk => '安装应用';
+  String get installedLabel => '已安装';
 
   List<Product> getProducts() {
     return [

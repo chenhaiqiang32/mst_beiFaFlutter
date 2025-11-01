@@ -28,6 +28,12 @@ class _DownloadDialogState extends State<DownloadDialog> {
   bool _downloadCompleted = false;
   String? _filePath;
   static const MethodChannel _channel = MethodChannel('com.example.beifa_app_platform/file');
+  
+  // 推荐应用的下载状态
+  final Map<String, double> _recommendedDownloads = {};
+  final Map<String, bool> _recommendedCompleted = {};
+  final Map<String, String> _recommendedFilePaths = {}; // 存储推荐应用的下载文件路径
+  final Map<String, bool> _recommendedShowSuccess = {}; // 控制是否显示成功弹窗
 
   @override
   void initState() {
@@ -332,125 +338,31 @@ class _DownloadDialogState extends State<DownloadDialog> {
           ),
         // 下载成功提示（在遮罩层外，可以点击）
         if (_downloadCompleted)
-          Positioned.fill(
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.5),
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
-                ),
-              ),
-              child: Center(
-                child: Container(
-                  margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.042667),
-                  padding: EdgeInsets.all(screenWidth * 0.042667),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF1A1A1A), // 深色背景
-                    borderRadius: BorderRadius.circular(screenWidth * 0.04),
-                    border: Border.all(
-                      color: Colors.green, // 绿色边框表示成功
-                      width: 1,
-                    ),
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      // 成功图标
-                      Icon(
-                        Icons.check_circle,
-                        color: Colors.green,
-                        size: screenWidth * 0.106667,
-                      ),
-                      SizedBox(height: screenWidth * 0.032),
-                      // 成功标题
-                      Text(
-                        LocalizedData.of(context).downloadSuccessTitle,
-                        style: TextStyle(
-                          color: Colors.green,
-                          fontSize: screenWidth * 0.042667,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: screenWidth * 0.021333),
-                      // 文件路径提示
-                      Text(
-                        LocalizedData.of(context).downloadSuccessMessage,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: screenWidth * 0.032,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      SizedBox(height: screenWidth * 0.016),
-                      // 文件路径
-                      Container(
-                        padding: EdgeInsets.all(screenWidth * 0.021333),
-                        decoration: BoxDecoration(
-                          color: Colors.grey[900],
-                          borderRadius: BorderRadius.circular(screenWidth * 0.016),
-                        ),
-                        child: SelectableText(
-                          _filePath ?? '',
-                          style: TextStyle(
-                            color: Colors.grey[300],
-                            fontSize: screenWidth * 0.026667,
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: screenWidth * 0.032),
-                      // 操作按钮
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          // 稍后安装按钮
-                          ElevatedButton.icon(
-                            onPressed: () {
-                              // 只关闭下载成功提示框，不关闭整个对话框
-                              setState(() {
-                                _downloadCompleted = false;
-                              });
-                            },
-                            icon: Icon(Icons.schedule, size: screenWidth * 0.037333),
-                            label: Text(
-                              LocalizedData.of(context).buttonInstallLater,
-                              style: TextStyle(fontSize: screenWidth * 0.032),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.grey[700],
-                              foregroundColor: Colors.white,
-                              padding: EdgeInsets.symmetric(
-                                horizontal: screenWidth * 0.042667,
-                                vertical: screenWidth * 0.021333,
-                              ),
-                            ),
-                          ),
-                          SizedBox(width: screenWidth * 0.032),
-                          // 安装应用按钮
-                          ElevatedButton.icon(
-                            onPressed: _installApk,
-                            icon: Icon(Icons.install_mobile, size: screenWidth * 0.037333),
-                            label: Text(
-                              LocalizedData.of(context).buttonInstallApk,
-                              style: TextStyle(fontSize: screenWidth * 0.032),
-                            ),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green,
-                              foregroundColor: Colors.white,
-                              padding: EdgeInsets.symmetric(
-                                horizontal: screenWidth * 0.042667,
-                                vertical: screenWidth * 0.021333,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
+          _buildSuccessDialog(screenWidth, _filePath ?? '', _installApk, () {
+            setState(() {
+              _downloadCompleted = false;
+            });
+          }),
+        // 推荐应用下载成功提示
+        ...LocalizedData.of(context)
+            .getProducts()
+            .where((p) => p.id != widget.product.id)
+            .take(3)
+            .map((app) {
+              if (_recommendedShowSuccess[app.id] == true) {
+                return _buildSuccessDialog(
+                  screenWidth,
+                  _recommendedFilePaths[app.id] ?? '',
+                  () => _installRecommendedApk(app.id),
+                  () {
+                    setState(() {
+                      _recommendedShowSuccess[app.id] = false;
+                    });
+                  },
+                );
+              }
+              return const SizedBox.shrink();
+            }),
       ],
     );
   }
@@ -506,7 +418,237 @@ class _DownloadDialogState extends State<DownloadDialog> {
     }
   }
 
+  Future<void> _downloadRecommendedApp(Product app) async {
+    if (kIsWeb || !Platform.isAndroid) {
+      return;
+    }
+    
+    // 如果已经在下载或已完成，不重复下载
+    if (_recommendedDownloads.containsKey(app.id) || _recommendedCompleted[app.id] == true) {
+      return;
+    }
+    
+    try {
+      // For Android 10+, we use app-specific external directory which doesn't require storage permission
+      final dir = await getExternalStorageDirectory();
+      if (dir == null) {
+        print('[DownloadDialog] Failed to get external storage directory for recommended app');
+        return;
+      }
+
+      final url = app.appInfo.downloadInfo.androidUrl;
+      final providedName = app.appInfo.downloadInfo.androidFileName;
+      final fallbackName = Uri.tryParse(url)?.pathSegments.isNotEmpty == true
+          ? Uri.parse(url).pathSegments.last
+          : '${app.name}.apk';
+      final fileName = providedName == null || providedName.isEmpty ? fallbackName : providedName;
+      
+      // Use Download subdirectory for better organization
+      final downloadDir = await Directory('${dir.path}/Download').create(recursive: true);
+      final filePath = '${downloadDir.path}/$fileName';
+      print('[DownloadDialog] Start download recommended app. url=$url fileName=$fileName filePath=$filePath');
+
+      final dio = Dio();
+      await dio.download(
+        url,
+        filePath,
+        onReceiveProgress: (received, total) {
+          if (!mounted) return;
+          if (total <= 0) return;
+          final p = received / total;
+          if ((p * 100).toInt() % 2 == 0) {
+            print('[DownloadDialog] Recommended app progress ${(p * 100).toStringAsFixed(0)}% ($received/$total)');
+          }
+          setState(() {
+            _recommendedDownloads[app.id] = p;
+          });
+        },
+      );
+
+      if (!mounted) return;
+      setState(() {
+        _recommendedDownloads[app.id] = 1.0;
+        _recommendedCompleted[app.id] = true;
+        _recommendedFilePaths[app.id] = filePath;
+        _recommendedShowSuccess[app.id] = true; // 显示成功弹窗
+      });
+      print('[DownloadDialog] Recommended app download completed. File saved to: $filePath');
+    } catch (e) {
+      print('[DownloadDialog] Recommended app download error: $e');
+      if (!mounted) return;
+      setState(() {
+        _recommendedDownloads.remove(app.id);
+      });
+    }
+  }
+
+  Future<void> _installRecommendedApk(String appId) async {
+    final filePath = _recommendedFilePaths[appId];
+    if (filePath == null || filePath.isEmpty) return;
+    try {
+      if (Platform.isAndroid) {
+        final file = File(filePath);
+        if (await file.exists()) {
+          try {
+            await _channel.invokeMethod('installApk', {'filePath': filePath});
+            print('[DownloadDialog] Successfully triggered recommended APK installation');
+          } on PlatformException catch (e) {
+            print('[DownloadDialog] Failed to install recommended APK: ${e.message}');
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('安装失败: ${e.message ?? e.code}'),
+                  duration: const Duration(seconds: 2),
+                ),
+              );
+            }
+          }
+        } else {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('文件不存在'),
+                duration: Duration(seconds: 2),
+              ),
+            );
+          }
+        }
+      }
+    } catch (e) {
+      print('[DownloadDialog] Failed to install recommended APK: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('安装失败: $e'),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    }
+  }
+
+  Widget _buildSuccessDialog(double screenWidth, String filePath, VoidCallback onInstall, VoidCallback onLater) {
+    return Positioned.fill(
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.black.withOpacity(0.5),
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+        ),
+        child: Center(
+          child: Container(
+            margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.042667),
+            padding: EdgeInsets.all(screenWidth * 0.042667),
+            decoration: BoxDecoration(
+              color: const Color(0xFF1A1A1A), // 深色背景
+              borderRadius: BorderRadius.circular(screenWidth * 0.04),
+              border: Border.all(
+                color: Colors.green, // 绿色边框表示成功
+                width: 1,
+              ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // 成功图标
+                Icon(
+                  Icons.check_circle,
+                  color: Colors.green,
+                  size: screenWidth * 0.106667,
+                ),
+                SizedBox(height: screenWidth * 0.032),
+                // 成功标题
+                Text(
+                  LocalizedData.of(context).downloadSuccessTitle,
+                  style: TextStyle(
+                    color: Colors.green,
+                    fontSize: screenWidth * 0.042667,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                SizedBox(height: screenWidth * 0.021333),
+                // 文件路径提示
+                Text(
+                  LocalizedData.of(context).downloadSuccessMessage,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: screenWidth * 0.032,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: screenWidth * 0.016),
+                // 文件路径
+                Container(
+                  padding: EdgeInsets.all(screenWidth * 0.021333),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[900],
+                    borderRadius: BorderRadius.circular(screenWidth * 0.016),
+                  ),
+                  child: SelectableText(
+                    filePath,
+                    style: TextStyle(
+                      color: Colors.grey[300],
+                      fontSize: screenWidth * 0.026667,
+                    ),
+                  ),
+                ),
+                SizedBox(height: screenWidth * 0.032),
+                // 操作按钮
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    // 稍后安装按钮
+                    ElevatedButton.icon(
+                      onPressed: onLater,
+                      icon: Icon(Icons.schedule, size: screenWidth * 0.037333),
+                      label: Text(
+                        LocalizedData.of(context).buttonInstallLater,
+                        style: TextStyle(fontSize: screenWidth * 0.032),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.grey[700],
+                        foregroundColor: Colors.white,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: screenWidth * 0.042667,
+                          vertical: screenWidth * 0.021333,
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: screenWidth * 0.032),
+                    // 安装应用按钮
+                    ElevatedButton.icon(
+                      onPressed: onInstall,
+                      icon: Icon(Icons.install_mobile, size: screenWidth * 0.037333),
+                      label: Text(
+                        LocalizedData.of(context).buttonInstallApk,
+                        style: TextStyle(fontSize: screenWidth * 0.032),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        foregroundColor: Colors.white,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: screenWidth * 0.042667,
+                          vertical: screenWidth * 0.021333,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildRecommendedApp(Product app, double screenWidth) {
+    final downloadProgress = _recommendedDownloads[app.id] ?? 0.0;
+    final isCompleted = _recommendedCompleted[app.id] ?? false;
+    final isDownloading = downloadProgress > 0.0 && downloadProgress < 1.0;
+    
     return Container(
       margin: EdgeInsets.only(bottom: screenWidth * 0.032),
       padding: EdgeInsets.all(screenWidth * 0.032),
@@ -570,21 +712,97 @@ class _DownloadDialogState extends State<DownloadDialog> {
             ),
           ),
           SizedBox(width: screenWidth * 0.032),
-          Container(
-            padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.032, vertical: screenWidth * 0.016),
-            decoration: BoxDecoration(
-              color: Colors.transparent,
-              border: Border.all(color: Colors.blue, width: 1),
-              borderRadius: BorderRadius.circular(screenWidth * 0.04),
-            ),
-            child: Text(
-              LocalizedData.of(context).downloadButtonText,
-              style: TextStyle(
-                color: Colors.blue,
-                fontSize: screenWidth * 0.032,
+          // 根据状态显示不同的UI
+          if (isCompleted)
+            // 已完成状态
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.032, vertical: screenWidth * 0.016),
+              decoration: BoxDecoration(
+                color: Colors.green.withOpacity(0.2),
+                border: Border.all(color: Colors.green, width: 1),
+                borderRadius: BorderRadius.circular(screenWidth * 0.04),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.check, color: Colors.green, size: screenWidth * 0.037333),
+                  SizedBox(width: screenWidth * 0.01),
+                  Text(
+                    LocalizedData.of(context).installedLabel,
+                    style: TextStyle(
+                      color: Colors.green,
+                      fontSize: screenWidth * 0.032,
+                    ),
+                  ),
+                ],
+              ),
+            )
+          else if (isDownloading)
+            // 下载中状态 - 显示进度条
+            Container(
+              width: screenWidth * 0.32,
+              height: screenWidth * 0.064,
+              decoration: BoxDecoration(
+                color: const Color(0xFF1A1A1A),
+                border: Border.all(color: const Color(0xFF4A90E2), width: 1),
+                borderRadius: BorderRadius.circular(screenWidth * 0.04),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(screenWidth * 0.04),
+                child: Stack(
+                  children: [
+                    // 进度填充
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Container(
+                        width: (screenWidth * 0.32) * downloadProgress,
+                        height: screenWidth * 0.064,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF2A2A2A),
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(screenWidth * 0.04),
+                            bottomLeft: Radius.circular(screenWidth * 0.04),
+                            topRight: downloadProgress >= 1.0 ? Radius.circular(screenWidth * 0.04) : Radius.circular(0),
+                            bottomRight: downloadProgress >= 1.0 ? Radius.circular(screenWidth * 0.04) : Radius.circular(0),
+                          ),
+                        ),
+                      ),
+                    ),
+                    // 进度文字
+                    Center(
+                      child: Text(
+                        '${(downloadProgress * 100).toInt()}%',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: screenWidth * 0.032,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            )
+          else
+            // 未开始下载 - 显示下载按钮
+            GestureDetector(
+              onTap: () => _downloadRecommendedApp(app),
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.032, vertical: screenWidth * 0.016),
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  border: Border.all(color: Colors.blue, width: 1),
+                  borderRadius: BorderRadius.circular(screenWidth * 0.04),
+                ),
+                child: Text(
+                  LocalizedData.of(context).downloadButtonText,
+                  style: TextStyle(
+                    color: Colors.blue,
+                    fontSize: screenWidth * 0.032,
+                  ),
+                ),
               ),
             ),
-          ),
         ],
       ),
     );
