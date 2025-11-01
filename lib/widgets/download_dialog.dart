@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'dart:io' show Platform, Directory;
+import 'package:flutter/services.dart';
+import 'dart:io' show Platform, Directory, File;
 import 'package:dio/dio.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:url_launcher/url_launcher.dart';
 import '../models/product.dart';
 import '../services/localized_data.dart';
 
@@ -23,6 +25,9 @@ class DownloadDialog extends StatefulWidget {
 class _DownloadDialogState extends State<DownloadDialog> {
   double _downloadProgress = 0.0;
   bool _started = false;
+  bool _downloadCompleted = false;
+  String? _filePath;
+  static const MethodChannel _channel = MethodChannel('com.example.beifa_app_platform/file');
 
   @override
   void initState() {
@@ -82,8 +87,10 @@ class _DownloadDialogState extends State<DownloadDialog> {
       if (!mounted) return;
       setState(() {
         _downloadProgress = 1.0;
+        _downloadCompleted = true;
+        _filePath = filePath;
       });
-      print('[DownloadDialog] Download completed.');
+      print('[DownloadDialog] Download completed. File saved to: $filePath');
     } catch (e) {
       print('[DownloadDialog] Download error: $e');
       if (!mounted) return;
@@ -249,9 +256,80 @@ class _DownloadDialogState extends State<DownloadDialog> {
             ),
           ),
         ),
-        // 遮罩层
-        Positioned.fill(
-          child: IgnorePointer(
+        // 遮罩层（仅在下载中且进度未达到100%时显示）
+        if (!_downloadCompleted && _downloadProgress < 1.0)
+          Positioned.fill(
+            child: IgnorePointer(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.5),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                  ),
+                ),
+                child: Stack(
+                  children: [
+                    // 下载进度条显示在遮罩层上
+                    Positioned(
+                      top: screenWidth * 0.533333, // 调整位置到合适的地方
+                      left: screenWidth * 0.042667,
+                      right: screenWidth * 0.042667,
+                      child: Center(
+                        child: Container(
+                          height: screenWidth * 0.08, // 进度条高度
+                          width: screenWidth * 0.6, // 进度条宽度
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF1A1A1A), // 深色背景
+                            border: Border.all(
+                              color: const Color(0xFF4A90E2), // 蓝色边框
+                              width: 1,
+                            ),
+                            borderRadius: BorderRadius.circular(screenWidth * 0.04), // 圆角
+                          ),
+                          child: Stack(
+                            children: [
+                              // 进度填充
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: Container(
+                                  width: (screenWidth * 0.6) * _downloadProgress, // 根据进度计算宽度
+                                  height: screenWidth * 0.08, // 确保高度与容器一致
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF2A2A2A), // 稍亮的填充色
+                                    borderRadius: BorderRadius.only(
+                                      topLeft: Radius.circular(screenWidth * 0.04),
+                                      bottomLeft: Radius.circular(screenWidth * 0.04),
+                                      topRight: _downloadProgress >= 1.0 ? Radius.circular(screenWidth * 0.04) : Radius.circular(0),
+                                      bottomRight: _downloadProgress >= 1.0 ? Radius.circular(screenWidth * 0.04) : Radius.circular(0),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              // 进度文字
+                              Center(
+                                child: Text(
+                                  '${LocalizedData.of(context).downloadedProgressPrefix}${(_downloadProgress * 100).toInt()}${LocalizedData.of(context).downloadedProgressSuffix}',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: screenWidth * 0.032,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        // 下载成功提示（在遮罩层外，可以点击）
+        if (_downloadCompleted)
+          Positioned.fill(
             child: Container(
               decoration: BoxDecoration(
                 color: Colors.black.withOpacity(0.5),
@@ -260,67 +338,169 @@ class _DownloadDialogState extends State<DownloadDialog> {
                   topRight: Radius.circular(20),
                 ),
               ),
-              child: Stack(
-                children: [
-                  // 下载进度条显示在遮罩层上
-                  Positioned(
-                    top: screenWidth * 0.533333, // 调整位置到合适的地方
-                    left: screenWidth * 0.042667,
-                    right: screenWidth * 0.042667,
-                    child: Center(
-                      child: Container(
-                        height: screenWidth * 0.08, // 进度条高度
-                        width: screenWidth * 0.6, // 进度条宽度
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF1A1A1A), // 深色背景
-                          border: Border.all(
-                            color: const Color(0xFF4A90E2), // 蓝色边框
-                            width: 1,
-                          ),
-                          borderRadius: BorderRadius.circular(screenWidth * 0.04), // 圆角
-                        ),
-                        child: Stack(
-                          children: [
-                            // 进度填充
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: Container(
-                                width: (screenWidth * 0.6) * _downloadProgress, // 根据进度计算宽度
-                                height: screenWidth * 0.08, // 确保高度与容器一致
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFF2A2A2A), // 稍亮的填充色
-                                  borderRadius: BorderRadius.only(
-                                    topLeft: Radius.circular(screenWidth * 0.04),
-                                    bottomLeft: Radius.circular(screenWidth * 0.04),
-                                    topRight: _downloadProgress >= 1.0 ? Radius.circular(screenWidth * 0.04) : Radius.circular(0),
-                                    bottomRight: _downloadProgress >= 1.0 ? Radius.circular(screenWidth * 0.04) : Radius.circular(0),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            // 进度文字
-                            Center(
-                              child: Text(
-                                '${LocalizedData.of(context).downloadedProgressPrefix}${(_downloadProgress * 100).toInt()}${LocalizedData.of(context).downloadedProgressSuffix}',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: screenWidth * 0.032,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+              child: Center(
+                child: Container(
+                  margin: EdgeInsets.symmetric(horizontal: screenWidth * 0.042667),
+                  padding: EdgeInsets.all(screenWidth * 0.042667),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1A1A1A), // 深色背景
+                    borderRadius: BorderRadius.circular(screenWidth * 0.04),
+                    border: Border.all(
+                      color: Colors.green, // 绿色边框表示成功
+                      width: 1,
                     ),
                   ),
-                ],
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // 成功图标
+                      Icon(
+                        Icons.check_circle,
+                        color: Colors.green,
+                        size: screenWidth * 0.106667,
+                      ),
+                      SizedBox(height: screenWidth * 0.032),
+                      // 成功标题
+                      Text(
+                        LocalizedData.of(context).downloadSuccessTitle,
+                        style: TextStyle(
+                          color: Colors.green,
+                          fontSize: screenWidth * 0.042667,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: screenWidth * 0.021333),
+                      // 文件路径提示
+                      Text(
+                        LocalizedData.of(context).downloadSuccessMessage,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: screenWidth * 0.032,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      SizedBox(height: screenWidth * 0.016),
+                      // 文件路径
+                      Container(
+                        padding: EdgeInsets.all(screenWidth * 0.021333),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[900],
+                          borderRadius: BorderRadius.circular(screenWidth * 0.016),
+                        ),
+                        child: SelectableText(
+                          _filePath ?? '',
+                          style: TextStyle(
+                            color: Colors.grey[300],
+                            fontSize: screenWidth * 0.026667,
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: screenWidth * 0.032),
+                      // 操作按钮
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // 稍后安装按钮
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              // 只关闭下载成功提示框，不关闭整个对话框
+                              setState(() {
+                                _downloadCompleted = false;
+                              });
+                            },
+                            icon: Icon(Icons.schedule, size: screenWidth * 0.037333),
+                            label: Text(
+                              LocalizedData.of(context).buttonInstallLater,
+                              style: TextStyle(fontSize: screenWidth * 0.032),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.grey[700],
+                              foregroundColor: Colors.white,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: screenWidth * 0.042667,
+                                vertical: screenWidth * 0.021333,
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: screenWidth * 0.032),
+                          // 安装应用按钮
+                          ElevatedButton.icon(
+                            onPressed: _installApk,
+                            icon: Icon(Icons.install_mobile, size: screenWidth * 0.037333),
+                            label: Text(
+                              LocalizedData.of(context).buttonInstallApk,
+                              style: TextStyle(fontSize: screenWidth * 0.032),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green,
+                              foregroundColor: Colors.white,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: screenWidth * 0.042667,
+                                vertical: screenWidth * 0.021333,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
           ),
-        ),
       ],
     );
+  }
+
+  Future<void> _installApk() async {
+    if (_filePath == null) return;
+    try {
+      if (Platform.isAndroid) {
+        // 在Android上，使用平台通道安装APK
+        final file = File(_filePath!);
+        if (await file.exists()) {
+          try {
+            await _channel.invokeMethod('installApk', {'filePath': _filePath!});
+            print('[DownloadDialog] Successfully triggered APK installation');
+          } on PlatformException catch (e) {
+            print('[DownloadDialog] Failed to install APK: ${e.message}');
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('安装失败: ${e.message ?? e.code}'),
+                  duration: const Duration(seconds: 2),
+                ),
+              );
+            }
+          }
+        } else {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('文件不存在'),
+                duration: Duration(seconds: 2),
+              ),
+            );
+          }
+        }
+      } else {
+        // 其他平台使用url_launcher
+        final fileUri = Uri.file(_filePath!);
+        if (await canLaunchUrl(fileUri)) {
+          await launchUrl(fileUri, mode: LaunchMode.externalApplication);
+        }
+      }
+    } catch (e) {
+      print('[DownloadDialog] Failed to install APK: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('安装失败: $e'),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+    }
   }
 
   Widget _buildRecommendedApp(Product app, double screenWidth) {

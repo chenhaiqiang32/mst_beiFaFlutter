@@ -15,6 +15,16 @@ class LocalizedData {
     }
     return DataService();
   }
+  
+  /// Returns localized data service without watching for changes
+  static dynamic ofWithoutListen(BuildContext context) {
+    // read without watching to avoid rebuilding in callbacks
+    final locale = Provider.of<LanguageService>(context, listen: false).currentLocale;
+    if (locale.languageCode == 'en') {
+      return DataServiceEn();
+    }
+    return DataService();
+  }
 }
 
 

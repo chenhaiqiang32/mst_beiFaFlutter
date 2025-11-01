@@ -73,6 +73,12 @@ class DataServiceEn {
   String get buttonCancel => 'Cancel';
   String get errorDialogTitle => 'Error';
   String get buttonOk => 'OK';
+  
+  // Download success texts
+  String get downloadSuccessTitle => 'Download Successful';
+  String get downloadSuccessMessage => 'File has been downloaded to:';
+  String get buttonOpenFolder => 'Open Folder';
+  String get buttonInstallApk => 'Install App';
 
   List<Product> getProducts() {
     return [

@@ -9,10 +9,12 @@ import '../services/localized_data.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final Product product;
+  final bool autoDownload; // 新增：是否自动触发下载
 
   const ProductDetailScreen({
     super.key,
     required this.product,
+    this.autoDownload = false, // 默认为 false
   });
 
   @override
@@ -23,6 +25,22 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   bool _showDownloadDialog = false;
   bool _isDescriptionExpanded = false; // 应用介绍 展开/收起
   bool _isDescriptionOverflow = false; // 应用介绍是否超出行数
+
+  @override
+  void initState() {
+    super.initState();
+    // 如果设置了自动下载，在页面加载后自动触发下载
+    if (widget.autoDownload) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        // 使用 withoutListen 避免在回调中触发 Provider 监听错误
+        final currentProduct = LocalizedData
+            .ofWithoutListen(context)
+            .getProducts()
+            .firstWhere((p) => p.id == widget.product.id, orElse: () => widget.product);
+        _handleDownload(currentProduct);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

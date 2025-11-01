@@ -67,6 +67,12 @@ class DataService {
   String get buttonCancel => '取消';
   String get errorDialogTitle => '错误';
   String get buttonOk => '确定';
+  
+  // Download success texts
+  String get downloadSuccessTitle => '下载成功';
+  String get downloadSuccessMessage => '文件已成功下载到以下位置：';
+  String get buttonOpenFolder => '打开文件夹';
+  String get buttonInstallApk => '安装应用';
 
   List<Product> getProducts() {
     return [
