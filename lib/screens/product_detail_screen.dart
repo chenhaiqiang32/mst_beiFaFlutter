@@ -32,7 +32,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         .getProducts()
         .firstWhere((p) => p.id == widget.product.id, orElse: () => widget.product);
     return Scaffold(
-      backgroundColor: const Color.fromARGB(0, 46, 7, 7),
+      backgroundColor: const Color.fromARGB(255, 245, 245, 247),
       body: SafeArea(
         child: Column(
           children: [

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:dio/dio.dart';
 import '../services/data_service.dart';
@@ -14,14 +13,7 @@ class DownloadService {
 
   Future<void> downloadAndroidApp(String url, String fileName, BuildContext context) async {
     try {
-      // 请求存储权限
-      final status = await Permission.storage.request();
-      if (!status.isGranted) {
-        _showErrorDialog(context, _dataService.permissionStorageRequired);
-        return;
-      }
-
-      // 获取下载目录
+      // For Android 10+, use app-specific directory which doesn't require storage permission
       final directory = await getExternalStorageDirectory();
       if (directory == null) {
         _showErrorDialog(context, _dataService.cannotGetStorageDir);

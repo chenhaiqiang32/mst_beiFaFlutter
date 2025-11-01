@@ -5,26 +5,27 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:beifa_app_platform/main.dart';
+import 'package:beifa_app_platform/services/language_service.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+  testWidgets('App starts smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+    // Note: BeifaApp is the actual main widget
+    final languageService = LanguageService();
+    await languageService.loadSavedLanguage();
+    
+    await tester.pumpWidget(
+      ChangeNotifierProvider<LanguageService>.value(
+        value: languageService,
+        child: const BeifaApp(),
+      ),
+    );
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
-
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Just verify the app builds without errors
+    expect(find.byType(BeifaApp), findsOneWidget);
   });
 }

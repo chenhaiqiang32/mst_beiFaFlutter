@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'dart:io' show Platform;
+import 'dart:io' show Platform, Directory;
 import 'package:dio/dio.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import '../models/product.dart';
 import '../services/localized_data.dart';
@@ -43,16 +42,11 @@ class _DownloadDialogState extends State<DownloadDialog> {
     if (_started) return;
     _started = true;
     try {
-      print('[DownloadDialog] Requesting storage permission...');
-      final status = await Permission.storage.request();
-      print('[DownloadDialog] Storage permission isGranted=${status.isGranted}');
-      if (!status.isGranted) {
-        return;
-      }
-
+      // For Android 10+, we use app-specific external directory which doesn't require storage permission
       final dir = await getExternalStorageDirectory();
       print('[DownloadDialog] getExternalStorageDirectory -> ${dir?.path}');
       if (dir == null) {
+        print('[DownloadDialog] Failed to get external storage directory');
         return;
       }
 
@@ -62,7 +56,10 @@ class _DownloadDialogState extends State<DownloadDialog> {
           ? Uri.parse(url).pathSegments.last
           : '${widget.product.name}.apk';
       final fileName = providedName == null || providedName.isEmpty ? fallbackName : providedName;
-      final filePath = '${dir.path}/$fileName';
+      
+      // Use Download subdirectory for better organization
+      final downloadDir = await Directory('${dir.path}/Download').create(recursive: true);
+      final filePath = '${downloadDir.path}/$fileName';
       print('[DownloadDialog] Start download. url=$url fileName=$fileName filePath=$filePath');
 
       final dio = Dio();
@@ -87,8 +84,8 @@ class _DownloadDialogState extends State<DownloadDialog> {
         _downloadProgress = 1.0;
       });
       print('[DownloadDialog] Download completed.');
-    } catch (_) {
-      print('[DownloadDialog] Download error: $_');
+    } catch (e) {
+      print('[DownloadDialog] Download error: $e');
       if (!mounted) return;
       setState(() {
         _downloadProgress = 0.0;
