@@ -287,37 +287,40 @@ class _DownloadDialogState extends State<DownloadDialog> {
                             ),
                             borderRadius: BorderRadius.circular(screenWidth * 0.04), // 圆角
                           ),
-                          child: Stack(
-                            children: [
-                              // 进度填充
-                              Align(
-                                alignment: Alignment.centerLeft,
-                                child: Container(
-                                  width: (screenWidth * 0.6) * _downloadProgress, // 根据进度计算宽度
-                                  height: screenWidth * 0.08, // 确保高度与容器一致
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFF2A2A2A), // 稍亮的填充色
-                                    borderRadius: BorderRadius.only(
-                                      topLeft: Radius.circular(screenWidth * 0.04),
-                                      bottomLeft: Radius.circular(screenWidth * 0.04),
-                                      topRight: _downloadProgress >= 1.0 ? Radius.circular(screenWidth * 0.04) : Radius.circular(0),
-                                      bottomRight: _downloadProgress >= 1.0 ? Radius.circular(screenWidth * 0.04) : Radius.circular(0),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(screenWidth * 0.04),
+                            child: Stack(
+                              children: [
+                                // 进度填充
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Container(
+                                    width: (screenWidth * 0.6) * _downloadProgress, // 根据进度计算宽度
+                                    height: screenWidth * 0.08, // 确保高度与容器一致
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFF2A2A2A), // 稍亮的填充色
+                                      borderRadius: BorderRadius.only(
+                                        topLeft: Radius.circular(screenWidth * 0.04),
+                                        bottomLeft: Radius.circular(screenWidth * 0.04),
+                                        topRight: _downloadProgress >= 1.0 ? Radius.circular(screenWidth * 0.04) : Radius.circular(0),
+                                        bottomRight: _downloadProgress >= 1.0 ? Radius.circular(screenWidth * 0.04) : Radius.circular(0),
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                              // 进度文字
-                              Center(
-                                child: Text(
-                                  '${LocalizedData.of(context).downloadedProgressPrefix}${(_downloadProgress * 100).toInt()}${LocalizedData.of(context).downloadedProgressSuffix}',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: screenWidth * 0.032,
-                                    fontWeight: FontWeight.w500,
+                                // 进度文字
+                                Center(
+                                  child: Text(
+                                    '${LocalizedData.of(context).downloadedProgressPrefix}${(_downloadProgress * 100).toInt()}${LocalizedData.of(context).downloadedProgressSuffix}',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: screenWidth * 0.032,
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
                       ),
