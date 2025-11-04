@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'dart:io' show Platform, Directory, File;
+import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:path_provider/path_provider.dart';
-import 'package:flutter/services.dart';
 import '../services/download_service.dart';
 import '../models/product.dart';
 import '../widgets/header_widget.dart';
@@ -27,14 +25,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   bool _showDownloadDialog = false;
   bool _isDescriptionExpanded = false; // 应用介绍 展开/收起
   bool _isDescriptionOverflow = false; // 应用介绍是否超出行数
-  bool _fileExists = false; // 文件是否存在
-  String? _filePath; // 文件路径
-  static const MethodChannel _channel = MethodChannel('com.example.beifa_app_platform/file');
 
   @override
   void initState() {
     super.initState();
-    _checkFileExists();
     // 如果设置了自动下载，在页面加载后自动触发下载
     if (widget.autoDownload) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -45,39 +39,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             .firstWhere((p) => p.id == widget.product.id, orElse: () => widget.product);
         _handleDownload(currentProduct);
       });
-    }
-  }
-
-  // 检查文件是否存在
-  Future<void> _checkFileExists() async {
-    if (kIsWeb || !Platform.isAndroid) return;
-    
-    try {
-      final dir = await getExternalStorageDirectory();
-      if (dir == null) return;
-
-      final url = widget.product.appInfo.downloadInfo.androidUrl;
-      final providedName = widget.product.appInfo.downloadInfo.androidFileName;
-      final fallbackName = Uri.tryParse(url)?.pathSegments.isNotEmpty == true
-          ? Uri.parse(url).pathSegments.last
-          : '${widget.product.name}.apk';
-      final fileName = providedName == null || providedName.isEmpty ? fallbackName : providedName;
-      
-      final downloadDir = Directory('${dir.path}/Download');
-      final filePath = '${downloadDir.path}/$fileName';
-      final file = File(filePath);
-      
-      final exists = await file.exists();
-      if (mounted) {
-        setState(() {
-          _fileExists = exists;
-          if (exists) {
-            _filePath = filePath;
-          }
-        });
-      }
-    } catch (e) {
-      print('[ProductDetailScreen] Error checking file existence: $e');
     }
   }
 
@@ -176,9 +137,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     _buildDownloadButton(
-                      _fileExists 
-                          ? LocalizedData.of(context).installButtonText 
-                          : LocalizedData.of(context).androidDownloadButtonText,
+                      LocalizedData.of(context).androidDownloadButtonText,
                       const Color(0xFFD32D26),
                       Colors.white,
                       () => _handleDownload(product),
@@ -707,50 +666,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     );
   }
 
-  Future<void> _installApk() async {
-    if (_filePath == null) return;
-    try {
-      if (Platform.isAndroid) {
-        final file = File(_filePath!);
-        if (await file.exists()) {
-          try {
-            await _channel.invokeMethod('installApk', {'filePath': _filePath!});
-            print('[ProductDetailScreen] Successfully triggered APK installation');
-          } on PlatformException catch (e) {
-            print('[ProductDetailScreen] Failed to install APK: ${e.message}');
-            if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('安装失败: ${e.message ?? e.code}'),
-                  duration: const Duration(seconds: 2),
-                ),
-              );
-            }
-          }
-        } else {
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('文件不存在'),
-                duration: Duration(seconds: 2),
-              ),
-            );
-          }
-        }
-      }
-    } catch (e) {
-      print('[ProductDetailScreen] Failed to install APK: $e');
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('安装失败: $e'),
-            duration: const Duration(seconds: 2),
-          ),
-        );
-      }
-    }
-  }
-
   void _handleDownload(Product product) {
     print('[DetailScreen] Download clicked for product=${product.id} name=${product.name}');
     if (kIsWeb) {
@@ -766,13 +681,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       return;
     }
     if (Platform.isAndroid) {
-      // 如果文件已存在，直接安装
-      if (_fileExists && _filePath != null) {
-        print('[DetailScreen] File exists. Installing APK from $_filePath');
-        _installApk();
-        return;
-      }
-      // 否则显示下载对话框
       print('[DetailScreen] Detected Android. Showing DownloadDialog for url=${product.appInfo.downloadInfo.androidUrl}');
       setState(() {
         _showDownloadDialog = true;

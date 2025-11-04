@@ -11,7 +11,6 @@ class DataService {
 
   // Common button texts
   String get downloadButtonText => '下载';
-  String get installButtonText => '去安装';
   String get detailsButtonText => '应用详情';
 
   // Footer text

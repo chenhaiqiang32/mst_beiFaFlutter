@@ -27,7 +27,6 @@ class _DownloadDialogState extends State<DownloadDialog> {
   bool _started = false;
   bool _downloadCompleted = false;
   String? _filePath;
-  bool _fileExists = false; // 主应用文件是否存在
   static const MethodChannel _channel = MethodChannel('com.example.beifa_app_platform/file');
   
   // 推荐应用的下载状态
@@ -35,83 +34,11 @@ class _DownloadDialogState extends State<DownloadDialog> {
   final Map<String, bool> _recommendedCompleted = {};
   final Map<String, String> _recommendedFilePaths = {}; // 存储推荐应用的下载文件路径
   final Map<String, bool> _recommendedShowSuccess = {}; // 控制是否显示成功弹窗
-  final Map<String, bool> _recommendedFileExists = {}; // 推荐应用文件是否存在
 
   @override
   void initState() {
     super.initState();
-    _checkFileExists();
     _maybeStartDownload();
-  }
-
-  // 检查主应用文件是否存在
-  Future<void> _checkFileExists() async {
-    if (kIsWeb || !Platform.isAndroid) return;
-    
-    try {
-      final dir = await getExternalStorageDirectory();
-      if (dir == null) return;
-
-      final url = widget.product.appInfo.downloadInfo.androidUrl;
-      final providedName = widget.product.appInfo.downloadInfo.androidFileName;
-      final fallbackName = Uri.tryParse(url)?.pathSegments.isNotEmpty == true
-          ? Uri.parse(url).pathSegments.last
-          : '${widget.product.name}.apk';
-      final fileName = providedName == null || providedName.isEmpty ? fallbackName : providedName;
-      
-      final downloadDir = Directory('${dir.path}/Download');
-      final filePath = '${downloadDir.path}/$fileName';
-      final file = File(filePath);
-      
-      final exists = await file.exists();
-      if (mounted) {
-        setState(() {
-          _fileExists = exists;
-          if (exists) {
-            _filePath = filePath;
-            _downloadCompleted = true;
-          }
-        });
-      }
-    } catch (e) {
-      print('[DownloadDialog] Error checking file existence: $e');
-    }
-  }
-
-  // 检查推荐应用文件是否存在
-  Future<void> _checkRecommendedFileExists(Product app) async {
-    if (kIsWeb || !Platform.isAndroid) return;
-    if (_recommendedFileExists.containsKey(app.id)) return; // 已检查过
-    
-    try {
-      final dir = await getExternalStorageDirectory();
-      if (dir == null) return;
-
-      final url = app.appInfo.downloadInfo.androidUrl;
-      final providedName = app.appInfo.downloadInfo.androidFileName;
-      final fallbackName = Uri.tryParse(url)?.pathSegments.isNotEmpty == true
-          ? Uri.parse(url).pathSegments.last
-          : '${app.name}.apk';
-      final fileName = providedName == null || providedName.isEmpty ? fallbackName : providedName;
-      
-      final downloadDir = Directory('${dir.path}/Download');
-      final filePath = '${downloadDir.path}/$fileName';
-      final file = File(filePath);
-      
-      final exists = await file.exists();
-      if (mounted) {
-        setState(() {
-          _recommendedFileExists[app.id] = exists;
-          if (exists) {
-            _recommendedFilePaths[app.id] = filePath;
-            _recommendedCompleted[app.id] = true;
-            _recommendedDownloads[app.id] = 1.0;
-          }
-        });
-      }
-    } catch (e) {
-      print('[DownloadDialog] Error checking recommended file existence: $e');
-    }
   }
 
   Future<void> _maybeStartDownload() async {
@@ -124,11 +51,6 @@ class _DownloadDialogState extends State<DownloadDialog> {
       return;
     }
     if (_started) return;
-    // 如果文件已存在，不开始下载
-    if (_fileExists) {
-      print('[DownloadDialog] File already exists. Skip download.');
-      return;
-    }
     _started = true;
     try {
       // For Android 10+, we use app-specific external directory which doesn't require storage permission
@@ -341,7 +263,7 @@ class _DownloadDialogState extends State<DownloadDialog> {
           ),
         ),
         // 遮罩层（仅在下载中且进度未达到100%时显示）
-        if (!_downloadCompleted && !_fileExists && _downloadProgress < 1.0)
+        if (!_downloadCompleted && _downloadProgress < 1.0)
           Positioned.fill(
             child: IgnorePointer(
               child: Container(
@@ -414,8 +336,8 @@ class _DownloadDialogState extends State<DownloadDialog> {
               ),
             ),
           ),
-        // 下载成功提示（在遮罩层外，可以点击）- 仅在刚刚下载完成时显示
-        if (_downloadCompleted && _filePath != null && _filePath!.isNotEmpty && !_fileExists)
+        // 下载成功提示（在遮罩层外，可以点击）
+        if (_downloadCompleted)
           _buildSuccessDialog(screenWidth, _filePath ?? '', _installApk, () {
             setState(() {
               _downloadCompleted = false;
@@ -723,14 +645,8 @@ class _DownloadDialogState extends State<DownloadDialog> {
   }
 
   Widget _buildRecommendedApp(Product app, double screenWidth) {
-    // 检查文件是否存在（如果还没检查过）
-    if (!_recommendedFileExists.containsKey(app.id)) {
-      _checkRecommendedFileExists(app);
-    }
-    
     final downloadProgress = _recommendedDownloads[app.id] ?? 0.0;
     final isCompleted = _recommendedCompleted[app.id] ?? false;
-    final fileExists = _recommendedFileExists[app.id] ?? false;
     final isDownloading = downloadProgress > 0.0 && downloadProgress < 1.0;
     
     return Container(
@@ -797,24 +713,28 @@ class _DownloadDialogState extends State<DownloadDialog> {
           ),
           SizedBox(width: screenWidth * 0.032),
           // 根据状态显示不同的UI
-          if (fileExists || (isCompleted && _recommendedFilePaths.containsKey(app.id)))
-            // 文件已存在 - 显示"去安装"按钮
-            GestureDetector(
-              onTap: () => _installRecommendedApk(app.id),
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.032, vertical: screenWidth * 0.016),
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  border: Border.all(color: Colors.green, width: 1),
-                  borderRadius: BorderRadius.circular(screenWidth * 0.04),
-                ),
-                child: Text(
-                  LocalizedData.of(context).installButtonText,
-                  style: TextStyle(
-                    color: Colors.green,
-                    fontSize: screenWidth * 0.032,
+          if (isCompleted)
+            // 已完成状态
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.032, vertical: screenWidth * 0.016),
+              decoration: BoxDecoration(
+                color: Colors.green.withOpacity(0.2),
+                border: Border.all(color: Colors.green, width: 1),
+                borderRadius: BorderRadius.circular(screenWidth * 0.04),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.check, color: Colors.green, size: screenWidth * 0.037333),
+                  SizedBox(width: screenWidth * 0.01),
+                  Text(
+                    LocalizedData.of(context).installedLabel,
+                    style: TextStyle(
+                      color: Colors.green,
+                      fontSize: screenWidth * 0.032,
+                    ),
                   ),
-                ),
+                ],
               ),
             )
           else if (isDownloading)

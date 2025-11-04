@@ -12,7 +12,6 @@ class DataServiceEn {
 
   // Common button texts
   String get downloadButtonText => 'Download';
-  String get installButtonText => 'Install';
   String get detailsButtonText => 'App Details';
 
   // Footer text
